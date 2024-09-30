@@ -3,6 +3,7 @@ import { AuthRouter } from '../modules/auth/auth.route';
 import { UserRouter } from '../modules/user/user.route';
 import { FollowerRouter } from '../modules/follower/follower.route';
 import { PostRouter } from '../modules/post/post.route';
+import { PostStateRouter } from '../modules/post-state/post-state-.route';
 
 const router = Router();
 
@@ -24,9 +25,13 @@ const moduleRoutes: IModuleRoute[] = [
     router: FollowerRouter,
   },
   {
-    path:'/posts',
-    router:PostRouter
-  }
+    path: '/posts',
+    router: PostRouter,
+  },
+  {
+    path: '/post-states',
+    router: PostStateRouter,
+  },
 ];
 
 const routes = moduleRoutes.map((route) =>

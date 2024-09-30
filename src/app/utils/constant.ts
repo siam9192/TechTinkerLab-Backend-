@@ -9,3 +9,11 @@ export const Role = {
   MODERATOR: 'MODERATOR',
   ADMIN: 'ADMIN',
 };
+
+export const Roles = Object.values(Role);
+
+export const VoteType = {
+  UP: 'UP',
+  DOWN: 'DOWN',
+  EMPTY: '',
+};

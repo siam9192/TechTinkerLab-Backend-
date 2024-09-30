@@ -168,11 +168,11 @@ const UserSchema = new Schema<IUser>(
     },
     profile_photo: {
       type: String,
-      default:null
+      default: null,
     },
     profile_cover_photo: {
       type: String,
-      default:null
+      default: null,
     },
     email: {
       type: String,

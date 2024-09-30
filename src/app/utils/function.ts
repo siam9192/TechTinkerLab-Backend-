@@ -13,31 +13,28 @@ export const generateOTP = (length = 6) => {
 
 export const objectId = (id: string) => new Types.ObjectId(id);
 
+export const getCustomizePostData = (post: IPost) => {
+  const tempDoc: any = { ...post };
+  const doc = tempDoc._doc;
+  const author = tempDoc._doc.author;
 
-
-export const getCustomizePostData = (post:IPost)=>{
-  const tempDoc:any = {...post}
-  const doc =  tempDoc._doc
-  const author  = tempDoc._doc.author
-  
-  
-  const author_latest_subscription = author.latest_subscription
+  const author_latest_subscription = author.latest_subscription;
 
   const is_verified = author_latest_subscription
-? new Date(author_latest_subscription.subscription_end_date).valueOf() <
-  new Date().valueOf()
-: false;
- 
-const result = {
-  ...doc,
-  author:{
-    username:author.username,
-    profile_photo:author.profile_photo,
-    total_follower: author.total_follower,
-    total_following: author.total_following,
-    is_verified
-  }
-}
+    ? new Date(author_latest_subscription.subscription_end_date).valueOf() <
+      new Date().valueOf()
+    : false;
 
-return result
-}
+  const result = {
+    ...doc,
+    author: {
+      username: author.username,
+      profile_photo: author.profile_photo,
+      total_follower: author.total_follower,
+      total_following: author.total_following,
+      is_verified,
+    },
+  };
+
+  return result;
+};
