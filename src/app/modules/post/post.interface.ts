@@ -9,6 +9,7 @@ export interface IPost {
   tags?: string[];
   is_premium?: boolean;
   is_private?: string;
+  total_earning?:number
   total_upvote?: number;
   total_downvote?: number;
   total_read?:number,

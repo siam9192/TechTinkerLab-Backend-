@@ -12,4 +12,6 @@ router.post('/create',auth('USER'),validateRequest(PostValidations.CreatePostVal
 router.get('/',PostController.getPosts)
 router.get('/user-read/:postId',auth('USER'),PostController.getPostForUserRead)
 
+router.put('/:postId',auth('USER'),validateRequest(PostValidations.UpdatePostValidationSchema),PostController.updatePost)
+router.delete('/:postId',auth('USER'),PostController.deletePost)
 export const PostRouter = router

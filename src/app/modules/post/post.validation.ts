@@ -9,8 +9,10 @@ const CreatePostValidationSchema = z.object({
     is_premium:boolean().optional()
 })
 
+const UpdatePostValidationSchema = CreatePostValidationSchema.partial()
 
 
 export const PostValidations = {
-    CreatePostValidationSchema
+    CreatePostValidationSchema,
+    UpdatePostValidationSchema
 }

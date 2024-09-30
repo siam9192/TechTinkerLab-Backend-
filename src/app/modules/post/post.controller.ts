@@ -15,6 +15,29 @@ const createPost =  catchAsync(async (req: Request, res: Response) => {
     });
   });
 
+const updatePost = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const postId = req.params.postId
+  const result = await PostService.updatePostIntoDB(userId,postId,req.body);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Post updated successfully',
+    data: result,
+  });
+});
+
+const deletePost = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const postId = req.params.postId
+  const result = await PostService.deletePostFromDB(userId,postId);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Post deleted successfully',
+    data: result,
+  });
+});
+
+
 const getPosts =  catchAsync(async (req: Request, res: Response) => {
   const result = await PostService.getPostsFromDB(req.query);
   sendSuccessResponse(res, {
@@ -35,8 +58,12 @@ const getPostForUserRead = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+
 export const PostController = {
     createPost,
+    updatePost,
+    deletePost,
     getPosts,
     getPostForUserRead
 }
