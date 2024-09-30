@@ -24,6 +24,7 @@ const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
 const getCurrentUserLoginActivities = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user.id;
@@ -37,6 +38,20 @@ const getCurrentUserLoginActivities = catchAsync(
   },
 );
 
+const getUserLoginActivities = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.params.userId;
+    const result =
+      await UserService.getCurrentUserLoginActivitiesFromDB(userId);
+      sendSuccessResponse(res, {
+      statusCode: httpStatus.OK,
+      message: 'User login activities retrieved successfully',
+      data: result,
+    });
+  },
+);
+
+
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
   const result = await UserService.changePasswordIntoDB(userId, req.body);
@@ -47,9 +62,22 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const changeUserRole = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const result = await UserService.changeUserRoleIntoDB(userId, req.body);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Role changed successfully',
+    data: result,
+  });
+});
+
+
 export const UserController = {
   updateProfile,
   getCurrentUser,
   getCurrentUserLoginActivities,
   changePassword,
+  getUserLoginActivities,
+  changeUserRole
 };

@@ -6,6 +6,7 @@ import { PostRouter } from '../modules/post/post.route';
 import { PostStateRouter } from '../modules/post-state/post-state-.route';
 import { CommentRouter } from '../modules/comment/comment.route';
 import { SubscriptionRouter } from '../modules/subscription/subcription.route';
+import { PaymentRouter } from '../modules/payment/payment.route';
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes: IModuleRoute[] = [
     path: '/subscriptions',
     router: SubscriptionRouter,
   },
+  {
+    path:'/payments',
+    router:PaymentRouter
+  }
 ];
 
 const routes = moduleRoutes.map((route) =>

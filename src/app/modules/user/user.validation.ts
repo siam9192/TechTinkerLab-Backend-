@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Gender } from '../../utils/constant';
+import { Gender, Role } from '../../utils/constant';
 
 const UserNameSchema = z.object({
   first_name: z.string(),
@@ -49,8 +49,15 @@ const ChangePasswordValidation = z.object({
     ),
 });
 
+
+const ChangeUserRoleValidation = z.object({
+  user_id:z.string(),
+  role:z.enum(Object.values(Role) as [string, ...string[]])
+})
+
 export const UserValidations = {
   CreateUserValidation,
   UpdateProfileValidation,
   ChangePasswordValidation,
+  ChangeUserRoleValidation
 };

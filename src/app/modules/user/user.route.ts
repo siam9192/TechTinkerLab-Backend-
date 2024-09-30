@@ -32,4 +32,6 @@ router.patch(
   UserController.changePassword,
 );
 
+router.patch('/change-role',auth('USER'),validateRequest(UserValidations.ChangeUserRoleValidation),UserController.changeUserRole)
+
 export const UserRouter = router;

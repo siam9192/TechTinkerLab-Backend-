@@ -53,3 +53,14 @@ export const getCustomizeUserData = (user: IUser) => {
     is_verified,
   };
 };
+
+
+export const convertFieldUpdateFormat = (doc:any,obj:any,objFieldName:string,avoid_fields?:string[])=>{
+  Object.entries(obj).forEach(([field, value]) => {
+  
+  if(!avoid_fields || !avoid_fields.length || !avoid_fields.includes(field)){
+    doc[`${objFieldName}.${field}`] = value;
+  }
+  
+  });
+}

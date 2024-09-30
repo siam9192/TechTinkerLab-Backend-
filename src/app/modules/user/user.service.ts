@@ -3,7 +3,10 @@ import AppError from '../../Errors/AppError';
 import User from './user.model';
 import { bcryptCompare, bcryptHash } from '../../utils/bcrypt';
 import { ICreateUser } from '../auth/auth.interface';
-import { IUser } from './user.interface';
+import { IUser, TRole } from './user.interface';
+import { convertFieldUpdateFormat } from '../../utils/function';
+import { doc } from 'prettier';
+import { Role } from '../../utils/constant';
 
 const createUserIntoDB = async (payload: ICreateUser) => {
   //  Hashing password using bcrypt
@@ -100,29 +103,19 @@ export const updateProfileIntoDB = async (
   const personal_details = payload.personal_details;
 
   if (personal_details?.name) {
-    Object.entries(personal_details.name).forEach(([field, value]) => {
-      updateDoc[`personal_details.name.${field}`] = value;
-    });
+    convertFieldUpdateFormat(updateDoc,payload.personal_details?.name,'personal_details.name')
   }
-
+ 
   if (personal_details?.address) {
-    Object.entries(personal_details.address).forEach(([field, value]) => {
-      updateDoc[`personal_details.address.${field}`] = value;
-    });
+    convertFieldUpdateFormat(updateDoc,payload.personal_details?.address,'personal_details.address')
   }
 
   if (personal_details?.study) {
-    Object.entries(personal_details.study).forEach(([field, value]) => {
-      updateDoc[`personal_details.study.${field}`] = value;
-    });
+    convertFieldUpdateFormat(updateDoc,payload.personal_details?.study,'personal_details.study')
   }
 
-  delete personal_details?.address;
-
   if (personal_details) {
-    Object.entries(personal_details).forEach(([field, value]) => {
-      updateDoc[`personal_details.${field}`] = value;
-    });
+    convertFieldUpdateFormat(updateDoc,payload.personal_details,'personal_details',['name','address'])
   }
 
   return await User.findByIdAndUpdate(userId, updateDoc, {
@@ -130,10 +123,49 @@ export const updateProfileIntoDB = async (
   });
 };
 
+const getUserLoginActivities = async (userId:string)=>{
+  const user = await User.findById(userId);
+
+  //  Checking user existence
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const activities = user.login_activities;
+  return activities;
+}
+
+const changeUserRoleIntoDB = async(currentUserRole:TRole,payload:{
+  user_id:string,
+  role:TRole
+})=>{
+  const user = await User.findById(payload.user_id)
+ 
+  // Checking user existence 
+  if(!user){
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  
+   // Moderator can not change another admin role but he can change his own role
+  if(user.role === Role.ADMIN){
+    throw new AppError(httpStatus.NOT_ACCEPTABLE,'Admin role can not be changed because only admin can changed his own role')
+  }
+  // Moderator can not change another moderator or his own role 
+  else if(user.role === Role.MODERATOR && currentUserRole === Role.MODERATOR){
+    throw new AppError(httpStatus.NOT_ACCEPTABLE,'Only Admin can changed his own role')
+  }
+ const updateStatus = await User.updateOne({_id:user._id,role:payload.role})
+ if(!updateStatus.modifiedCount){
+  throw new AppError(httpStatus.BAD_REQUEST,'Role can not be changed.Something want wrong')
+ }
+ return null
+}
+
 export const UserService = {
   createUserIntoDB,
   getCurrentUserFromDB,
   changePasswordIntoDB,
   updateProfileIntoDB,
   getCurrentUserLoginActivitiesFromDB,
+  getUserLoginActivities,
+  changeUserRoleIntoDB
 };

@@ -14,7 +14,6 @@ const packageSubscriptionRequest = async (
   userId: string,
   payload: { package_id: string; redirect_url: string },
 ) => {
-
   const subscriptionPackage = await Package.findById(payload.package_id);
 
   if (!subscriptionPackage) {
@@ -49,7 +48,6 @@ const packageSubscriptionPaymentSuccess = async (
   res: Response,
   query: { payment_id: string; redirect_url: string },
 ) => {
-   
   const paymentId = query.payment_id;
   const redirect_url = query.redirect_url;
   // Checking payment id existence in request query
@@ -86,14 +84,14 @@ const packageSubscriptionPaymentSuccess = async (
     user: payment.payer,
   });
 
-  
   // Updating the user latest subscription
   await User.findByIdAndUpdate(payment.payer, {
     latest_subscription: {
-     subscription: subscription._id,
+      subscription: subscription._id,
       subscription_start_date: Date.now(),
-      subscription_end_date:
-       new Date (Date.now() + subscriptionPackage.expire_after_hours* 60 * 60 * 1000).toISOString(),
+      subscription_end_date: new Date(
+        Date.now() + subscriptionPackage.expire_after_hours * 60 * 60 * 1000,
+      ).toISOString(),
     },
   });
 
