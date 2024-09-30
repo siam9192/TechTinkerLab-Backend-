@@ -13,6 +13,7 @@
     "mongoose": "^8.7.0",
     "nodemailer": "^6.9.15",
     "prettier": "^3.3.3",
+    "stripe": "^16.12.0",
     "useragent": "^2.3.0",
     "zod": "^3.23.8"
   },
@@ -20,7 +21,7 @@
     "start:prod": "node ./src/dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/app/server.ts",
     "build": "tsc",
-    "lint": "eslint src/app/.ts",
+    "lint": "eslint src/app",
     "lint:fix": "npx eslint  --fix",
     "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
     "prettier:fix": "npx prettier --write src",

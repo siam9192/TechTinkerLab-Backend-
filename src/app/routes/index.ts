@@ -4,6 +4,8 @@ import { UserRouter } from '../modules/user/user.route';
 import { FollowerRouter } from '../modules/follower/follower.route';
 import { PostRouter } from '../modules/post/post.route';
 import { PostStateRouter } from '../modules/post-state/post-state-.route';
+import { CommentRouter } from '../modules/comment/comment.route';
+import { SubscriptionRouter } from '../modules/subscription/subcription.route';
 
 const router = Router();
 
@@ -31,6 +33,14 @@ const moduleRoutes: IModuleRoute[] = [
   {
     path: '/post-states',
     router: PostStateRouter,
+  },
+  {
+    path: '/comments',
+    router: CommentRouter,
+  },
+  {
+    path: '/subscriptions',
+    router: SubscriptionRouter,
   },
 ];
 

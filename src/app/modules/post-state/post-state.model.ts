@@ -1,12 +1,10 @@
 import { model, Schema, Types } from 'mongoose';
 import { IPostState, TVote } from './post-state.interface';
 
-const VoteSchema = new Schema<TVote>(
-   {
+const VoteSchema = new Schema<TVote>({
   upvote: { type: Boolean, default: false },
   downvote: { type: Boolean, default: false },
-
-})
+});
 
 const PostStateSchema = new Schema<IPostState>({
   post: {
@@ -20,9 +18,9 @@ const PostStateSchema = new Schema<IPostState>({
     required: true,
   },
 
-  vote:{
-    type:VoteSchema,
-    required:true
+  vote: {
+    type: VoteSchema,
+    required: true,
   },
   last_read_at: {
     type: Date,

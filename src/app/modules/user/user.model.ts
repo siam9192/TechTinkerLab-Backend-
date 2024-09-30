@@ -8,6 +8,7 @@ import {
   TLoginLocation,
   TName,
   TStudy,
+  TSubscription,
 } from './user.interface';
 import { Role } from '../../utils/constant';
 
@@ -69,10 +70,10 @@ const StudySchema = new Schema<TStudy>({
   },
 });
 
-const SubscriptionSchema = new Schema({
-  package: {
+const SubscriptionSchema = new Schema<TSubscription>({
+  subscription: {
     type: Schema.Types.ObjectId,
-    ref: 'Package',
+    ref: 'Subscription',
     required: true,
   },
   subscription_start_date: {

@@ -79,8 +79,12 @@ const updateVoteStatusIntoDB = async (
       });
     }
   }
- 
-  await PostState.findByIdAndUpdate(postState._id, { vote },{runValidators:true});
+
+  await PostState.findByIdAndUpdate(
+    postState._id,
+    { vote },
+    { runValidators: true },
+  );
 };
 
 const getUserActivityOfPostFromDB = async (userId: string, postId: string) => {

@@ -10,6 +10,12 @@ export const Role = {
   ADMIN: 'ADMIN',
 };
 
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  SUCCESS: 'SUCCESS',
+  CANCELED: 'CANCELED',
+};
+
 export const Roles = Object.values(Role);
 
 export const VoteType = {

@@ -24,7 +24,7 @@ export type TStudy = {
   description?: string;
 };
 export type TSubscription = {
-  package: Types.ObjectId;
+  subscription: Types.ObjectId;
   subscription_start_date: Date;
   subscription_end_date: Date;
 };
