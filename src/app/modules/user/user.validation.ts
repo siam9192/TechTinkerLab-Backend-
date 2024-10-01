@@ -55,9 +55,14 @@ const ChangeUserRoleValidation = z.object({
   role:z.enum(Object.values(Role) as [string, ...string[]])
 })
 
+const ChangeUserBlockStatusValidation = z.object({
+  user_id:z.string(),
+  status:z.boolean()
+})
 export const UserValidations = {
   CreateUserValidation,
   UpdateProfileValidation,
   ChangePasswordValidation,
-  ChangeUserRoleValidation
+  ChangeUserRoleValidation,
+  ChangeUserBlockStatusValidation
 };

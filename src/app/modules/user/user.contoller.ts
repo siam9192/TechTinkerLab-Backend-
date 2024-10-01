@@ -24,6 +24,15 @@ const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.getUsersFromDB();
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Users retrieved successfully',
+    data: result,
+  });
+});
+
 
 const getCurrentUserLoginActivities = catchAsync(
   async (req: Request, res: Response) => {
@@ -73,11 +82,24 @@ const changeUserRole = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+const changeUserBlockStatus = catchAsync(async (req: Request, res: Response) => {
+  const userRole = req.user.role;
+  const result = await UserService.changeUserBlockStatusIntoDB(userRole, req.body);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'User block status updated successfully',
+    data: result,
+  });
+});
+
+
 export const UserController = {
   updateProfile,
   getCurrentUser,
+  getUsers,
   getCurrentUserLoginActivities,
   changePassword,
   getUserLoginActivities,
-  changeUserRole
+  changeUserRole,
+  changeUserBlockStatus
 };

@@ -8,6 +8,10 @@ import { TRole } from './user.interface';
 
 const router = Router();
 
+router.get('/',
+auth('ADMIN','MODERATOR'),
+UserController.getUsers)
+
 router.get(
   '/current-user',
   auth(...(Object.values(Role) as TRole[])),
@@ -32,6 +36,8 @@ router.patch(
   UserController.changePassword,
 );
 
+
 router.patch('/change-role',auth('USER'),validateRequest(UserValidations.ChangeUserRoleValidation),UserController.changeUserRole)
+router.patch('/change-block-status',auth('ADMIN','MODERATOR'),validateRequest(UserValidations.ChangeUserBlockStatusValidation),UserController.changeUserBlockStatus)
 
 export const UserRouter = router;

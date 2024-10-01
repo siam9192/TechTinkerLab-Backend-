@@ -83,6 +83,10 @@ const packageSubscriptionPaymentSuccess = async (
     payment: payment._id,
     user: payment.payer,
   });
+  
+  // Updating the payment status PENDING to SUCCESS
+
+  await Payment.findByIdAndUpdate(paymentId,{status:PaymentStatus.SUCCESS})
 
   // Updating the user latest subscription
   await User.findByIdAndUpdate(payment.payer, {

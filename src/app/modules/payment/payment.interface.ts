@@ -9,4 +9,6 @@ export interface IPayment {
   method: 'STRIPE';
   amount: number;
   purchased_package: Types.ObjectId;
+  createdAt:Date,
+  updatedAt:Date
 }

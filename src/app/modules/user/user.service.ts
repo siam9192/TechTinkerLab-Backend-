@@ -4,7 +4,7 @@ import User from './user.model';
 import { bcryptCompare, bcryptHash } from '../../utils/bcrypt';
 import { ICreateUser } from '../auth/auth.interface';
 import { IUser, TRole } from './user.interface';
-import { convertFieldUpdateFormat } from '../../utils/function';
+import { convertFieldUpdateFormat, getCustomizeUserData, objectId } from '../../utils/function';
 import { doc } from 'prettier';
 import { Role } from '../../utils/constant';
 
@@ -17,7 +17,13 @@ const createUserIntoDB = async (payload: ICreateUser) => {
   return await User.create(payload);
 };
 
-const getUsersFromDB = async () => {};
+const getUsersFromDB = async () => {
+  // Getting users
+  const users = await User.find()
+  
+  // Return the users data with customize format
+  return users.map(user=>getCustomizeUserData(user,true))
+};
 
 const getCurrentUserFromDB = async (userId: string) => {
   const user = await User.findById(userId);
@@ -160,12 +166,29 @@ const changeUserRoleIntoDB = async(currentUserRole:TRole,payload:{
  return null
 }
 
+const changeUserBlockStatusIntoDB = async (currentUserRole:TRole,payload:{user_id:string,status:boolean})=>{
+  const user = await User.findById(payload.user_id)
+
+  //  Checking user existence
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  // const userRole = user.role
+  const updateStatus = await User.updateOne({_id:objectId(payload.user_id)},{is_blocked:payload.status})
+  if(!updateStatus.modifiedCount){
+    throw new AppError(httpStatus.BAD_REQUEST,'User role can not be changed.something went wrong')
+  }
+  return null
+}
+
 export const UserService = {
   createUserIntoDB,
   getCurrentUserFromDB,
+  getUsersFromDB,
   changePasswordIntoDB,
   updateProfileIntoDB,
   getCurrentUserLoginActivitiesFromDB,
   getUserLoginActivities,
-  changeUserRoleIntoDB
+  changeUserRoleIntoDB,
+  changeUserBlockStatusIntoDB
 };

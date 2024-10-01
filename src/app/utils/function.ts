@@ -39,19 +39,23 @@ export const getCustomizePostData = (post: IPost) => {
   return result;
 };
 
-export const getCustomizeUserData = (user: IUser) => {
+export const getCustomizeUserData = (user: IUser,personal_details?:boolean) => {
   const latest_subscription = user.latest_subscription;
   const is_verified = latest_subscription
     ? new Date(latest_subscription.subscription_end_date).valueOf() <
       new Date().valueOf()
     : false;
-  return {
-    username: user.username,
-    profile_photo: user.profile_photo,
-    total_follower: user.total_follower,
-    total_following: user.total_following,
-    is_verified,
-  };
+    const data:any = {
+      username: user.username,
+      profile_photo: user.profile_photo,
+      total_follower: user.total_follower,
+      total_following: user.total_following,
+      is_verified,
+    }
+    if(personal_details){
+      data.personal_details = user.personal_details
+    }
+  return data ;
 };
 
 
