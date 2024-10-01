@@ -6,6 +6,7 @@ import User from '../user/user.model';
 import { IPost } from './post.interface';
 import Post from './post.model';
 import { startSession } from 'mongoose';
+import { ReaderService } from '../reader/reader.service';
 
 const createPostIntoDB = async (userId: string, payload: IPost) => {
   payload.author = objectId(userId);
@@ -88,13 +89,17 @@ const getPostForUserReadFromDB = async (userId: string, postId: string) => {
   if (!post) {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
   }
+
   //  if user is not verified and the post is premium content then throw an error
-  if (post.is_premium && !isUserVerified) {
+  if (post.author._id.toString() !==  userId && post.is_premium && !isUserVerified) {
     throw new AppError(
       httpStatus.NOT_ACCEPTABLE,
       'This is premium content.Please Subscribe our monthly package to  access all of premium contents',
     );
   }
+  
+  // Creating the new reader of the post
+  await ReaderService.createReaderIntoDB({userId,postId})
 
   const result = getCustomizePostData(post);
 
@@ -177,5 +182,5 @@ export const PostService = {
   updatePostIntoDB,
   deletePostFromDB,
   getPostsFromDB,
-  getPostForUserReadFromDB,
+  getPostForUserReadFromDB
 };

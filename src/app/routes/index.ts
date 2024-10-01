@@ -3,11 +3,12 @@ import { AuthRouter } from '../modules/auth/auth.route';
 import { UserRouter } from '../modules/user/user.route';
 import { FollowerRouter } from '../modules/follower/follower.route';
 import { PostRouter } from '../modules/post/post.route';
-import { PostStateRouter } from '../modules/post-state/post-state-.route';
 import { CommentRouter } from '../modules/comment/comment.route';
-import { SubscriptionRouter } from '../modules/subscription/subcription.route';
+import { SubscriptionRouter } from '../modules/subscription/subscription.route';
 import { PaymentRouter } from '../modules/payment/payment.route';
 import { OverviewRouter } from '../modules/overview/overview.route';
+import { ReactionRouter } from '../modules/reaction/reaction.route';
+import { CategoryRouter } from '../modules/category/category.route';
 
 const router = Router();
 
@@ -33,8 +34,13 @@ const moduleRoutes: IModuleRoute[] = [
     router: PostRouter,
   },
   {
-    path: '/post-states',
-    router: PostStateRouter,
+    path: '/categories',
+    router: CategoryRouter,
+  },
+  
+  {
+    path: '/reactions',
+    router: ReactionRouter,
   },
   {
     path: '/comments',

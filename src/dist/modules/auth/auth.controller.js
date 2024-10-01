@@ -17,6 +17,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const response_1 = require("../../response");
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const auth_service_1 = require("./auth.service");
+const AppError_1 = __importDefault(require("../../Errors/AppError"));
 const handelSignup = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.AuthService.signup(req.body, req);
     (0, response_1.sendSuccessResponse)(res, {
@@ -34,7 +35,10 @@ const handelSignIn = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 const handelGetAccessToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshToken = req.cookies['refreshToken'];
+    const refreshToken = req.headers.authorization;
+    if (!refreshToken) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Something went wrong');
+    }
     const result = yield auth_service_1.AuthService.getAccessToken(refreshToken);
     (0, response_1.sendSuccessResponse)(res, {
         statusCode: http_status_1.default.OK,

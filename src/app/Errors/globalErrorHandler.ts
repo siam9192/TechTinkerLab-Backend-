@@ -1,5 +1,5 @@
 // eslint-disable no-unused-vars
-import { ErrorRequestHandler } from 'express';
+
 import { HandleCastError } from './handleCastError';
 import { HandleZodValidationError } from './handleZodValidationError';
 import { HandleValidationError } from './handleValidationError';
@@ -8,12 +8,13 @@ import { TErrorSource } from '../interface/error';
 import { ZodError } from 'zod';
 import config from '../config';
 import { HandleDuplicateError } from './handleDuplicateError';
+import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 
-export const GlobalErrorHandler: ErrorRequestHandler = (
-  err,
-  req,
-  res,
-  next,
+export const GlobalErrorHandler:any = (
+  err:any,
+  req:Request,
+  res:Response,
+  next:NextFunction,
 ) => {
   let statusCode = 500;
   let message = 'Something went wrong!';

@@ -1,10 +1,11 @@
 import httpStatus from 'http-status';
 import AppError from '../../Errors/AppError';
-import { objectId } from '../../utils/function';
+import { getCustomizeUserData, objectId } from '../../utils/function';
 import Follower from './follower.model';
 import { startSession } from 'mongoose';
 import User from '../user/user.model';
 import QueryBuilder from '../../middlewares/QueryBuilder';
+import { IUser, IUserView } from '../user/user.interface';
 
 const createFollowerIntoDB = async (
   userId: string,
@@ -117,7 +118,7 @@ const unfollowUserIntoDB = async (
 
 const getUserFollowers = async (userId: string, query: any) => {
   query.follower = objectId(userId);
-  const result = await new QueryBuilder(Follower.find(), query)
+  const followers:any = await new QueryBuilder(Follower.find(), query)
     .search(['username'])
     .find()
     .sort()
@@ -129,19 +130,25 @@ const getUserFollowers = async (userId: string, query: any) => {
     .search(['username'])
     .find()
     .getMeta();
-  //  result = result.map(item=>{
-  //   return Object.keys(item).map(key=>{
-
-  //   })
-  //  })
+  const result = followers.map((follower:IUser)=>getCustomizeUserData(follower))
   return {
     result,
     meta,
   };
 };
 
+const getAccountFollowStatusOfCurrentUserFromDB = async(userId:string,accountId:string)=>{
+  
+  // Finding user account from account followers
+  const is_following = await Follower.exists({user:objectId(accountId),follower:objectId(userId)})
+  return {
+    status:is_following? true : false  
+  }
+} 
+
 export const FollowerService = {
   createFollowerIntoDB,
   unfollowUserIntoDB,
   getUserFollowers,
+  getAccountFollowStatusOfCurrentUserFromDB
 };

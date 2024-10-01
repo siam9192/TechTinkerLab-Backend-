@@ -1,12 +1,13 @@
 import { model, Schema, Types } from 'mongoose';
-import { IPostState, TVote } from './post-state.interface';
+import { IReaction, TVote } from './reaction.interface';
+
 
 const VoteSchema = new Schema<TVote>({
   upvote: { type: Boolean, default: false },
   downvote: { type: Boolean, default: false },
 });
 
-const PostStateSchema = new Schema<IPostState>({
+const ReactionSchema = new Schema<IReaction>({
   post: {
     type: Schema.Types.ObjectId,
     ref: 'Post',
@@ -22,12 +23,10 @@ const PostStateSchema = new Schema<IPostState>({
     type: VoteSchema,
     required: true,
   },
-  last_read_at: {
-    type: Date,
-    default: Date.now,
-  },
+},{
+    timestamps:true
 });
 
-const PostState = model<IPostState>('Post-State', PostStateSchema);
+const Reaction = model<IReaction>('Reaction', ReactionSchema);
 
-export default PostState;
+export default Reaction;

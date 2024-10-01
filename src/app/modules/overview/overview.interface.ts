@@ -1,8 +1,8 @@
 import { months } from "../../utils/constant"
 
 type TMonthRevenue = {
-  month:typeof months[],
-  revenue:number,
+  month:string,
+  total_revenue:number,
   upcoming:boolean
 }
 

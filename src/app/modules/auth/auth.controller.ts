@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import { sendSuccessResponse } from '../../response';
 import catchAsync from '../../utils/catchAsync';
 import { AuthService } from './auth.service';
+import AppError from '../../Errors/AppError';
 
 const handelSignup = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.signup(req.body, req);
@@ -23,7 +24,10 @@ const handelSignIn = catchAsync(async (req: Request, res: Response) => {
 });
 
 const handelGetAccessToken = catchAsync(async (req: Request, res: Response) => {
-  const refreshToken = req.cookies['refreshToken'];
+  const refreshToken = req.headers.authorization;
+  if(!refreshToken){
+    throw new AppError(httpStatus.BAD_REQUEST,'Something went wrong')
+  }
   const result = await AuthService.getAccessToken(refreshToken);
   sendSuccessResponse(res, {
     statusCode: httpStatus.OK,

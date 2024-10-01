@@ -39,8 +39,18 @@ const ChangePasswordValidation = zod_1.z.object({
         .min(6, 'Password length must be at least minimum  6 character and maximum 28 character')
         .max(28, 'Password length must be at least minimum  6 character and maximum 28 character'),
 });
+const ChangeUserRoleValidation = zod_1.z.object({
+    user_id: zod_1.z.string(),
+    role: zod_1.z.enum(Object.values(constant_1.Role))
+});
+const ChangeUserBlockStatusValidation = zod_1.z.object({
+    user_id: zod_1.z.string(),
+    status: zod_1.z.boolean()
+});
 exports.UserValidations = {
     CreateUserValidation,
     UpdateProfileValidation: exports.UpdateProfileValidation,
     ChangePasswordValidation,
+    ChangeUserRoleValidation,
+    ChangeUserBlockStatusValidation
 };

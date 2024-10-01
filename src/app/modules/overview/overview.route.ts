@@ -4,8 +4,9 @@ import auth from "../../middlewares/auth";
 
 const router = Router()
 
-router.get('/admin',OverviewController.getAdminOverview)
+router.get('/admin',auth('ADMIN'),OverviewController.getAdminOverview)
 
 router.get('/current-user',auth('USER'),OverviewController.getCurrentUserOverview)
 
+router.get('/post/:postId',auth('USER'),OverviewController.getPostOverviewData)
 export const OverviewRouter = router

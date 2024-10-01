@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { IPost } from '../modules/post/post.interface';
-import { IUser } from '../modules/user/user.interface';
+import { IUser, IUserView } from '../modules/user/user.interface';
 
 export const generateOTP = (length = 6) => {
   const numbers: number[] = [];
@@ -39,7 +39,7 @@ export const getCustomizePostData = (post: IPost) => {
   return result;
 };
 
-export const getCustomizeUserData = (user: IUser,personal_details?:boolean) => {
+export const getCustomizeUserData = (user: IUser,personal_details?:boolean):IUserView => {
   const latest_subscription = user.latest_subscription;
   const is_verified = latest_subscription
     ? new Date(latest_subscription.subscription_end_date).valueOf() <
@@ -67,4 +67,31 @@ export const convertFieldUpdateFormat = (doc:any,obj:any,objFieldName:string,avo
   }
   
   });
+}
+
+export function getDaysInMonth(year:number, month:number) {
+  // Create an empty array to store the days
+  let days = [];
+
+  // Month in JavaScript Date object is 0-indexed (January is 0, December is 11)
+  let date = new Date(year, month, 1);
+
+  // Loop until the next month
+  while (date.getMonth() === month) {
+      days.push(new Date(date).getDate()); // Add a copy of the date to the array
+      date.setDate(date.getDate() + 1); // Move to the next day
+  }
+
+  return days;
+}
+
+
+export function getLastDayOfMonth(year:number, month:number) {
+  // Set the day to 0 of the next month to get the last day of the current month
+  return new Date(year, month + 1, 0);
+}
+
+export function getFirstDayOfMonth(year:number, month:number) {
+  // Month is 0-indexed in JavaScript (January is 0, December is 11)
+  return new Date(year, month, 1);
 }

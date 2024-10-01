@@ -8,20 +8,20 @@ const router = Router();
 
 router.post(
   '/',
-  auth('USER'),
+  auth('USER','ADMIN','MODERATOR'),
   validateRequest(CommentValidations.CreateCommentValidation),
   CommentController.createComment,
 );
 
 router.patch(
   '/',
-  auth('USER'),
+  auth('USER','ADMIN','MODERATOR'),
   validateRequest(CommentValidations.UpdateCommentValidation),
   CommentController.updateComment,
 );
 
-router.delete('/:commentId', auth('USER'), CommentController.deleteComment);
+router.delete('/:commentId', auth('USER','ADMIN','MODERATOR'), CommentController.deleteComment);
 
-router.get('/post/:postId', CommentController.getPostComments);
+router.get('/post/:postId',CommentController.getPostComments);
 
 export const CommentRouter = router;

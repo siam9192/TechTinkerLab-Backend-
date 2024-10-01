@@ -1,47 +1,30 @@
-import httpStatus from 'http-status';
-import AppError from '../../Errors/AppError';
 import { objectId } from '../../utils/function';
 import Post from '../post/post.model';
-import PostState from './post-state.model';
 import { VoteType } from '../../utils/constant';
+import Reaction from './reaction.model';
 
-const upsertPostState = async (userId: string, postId: string) => {
-  const state = await PostState.findOne({
-    user: objectId(userId),
-    post: objectId(postId),
-  });
-  if (state) {
-    await PostState.findByIdAndUpdate(state._id, { last_read_at: new Date() });
-  } else {
-    const post = await Post.exists({ _id: objectId(postId) });
-    //    Checking post existence
-    if (!post) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
-    }
-    const data = {
-      user: userId,
-      post: postId,
-    };
-    await PostState.create(data);
-  }
-  return true;
-};
 
-const updateVoteStatusIntoDB = async (
+
+const upsertReactionIntoDB = async (
   userId: string,
   payload: { postId: string; vote_type: 'UP' | 'DOWN' | '' },
 ) => {
-  let postState = await PostState.findOne({
+  let reaction = await Reaction.findOne({
     post: objectId(payload.postId),
     user: objectId(userId),
   }).populate('post');
 
-  if (!postState) {
+  if (!reaction) {
     const data = {
       user: userId,
       post: payload.postId,
+      vote:{
+        upvote:payload.vote_type === 'UP',
+        downvote:payload.vote_type === 'DOWN',
+      }
     };
-    postState = await PostState.create(data);
+ 
+   return await Reaction.create(data);
   }
 
   const vote: any = {};
@@ -49,7 +32,7 @@ const updateVoteStatusIntoDB = async (
   if (payload.vote_type === 'UP') {
     (vote.upvote = true), (vote.downvote = false);
     await Post.findByIdAndUpdate(payload.postId, { $inc: { total_upvote: 1 } });
-    if (postState.vote.downvote) {
+    if (reaction.vote.downvote) {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_downvote: -1 },
       });
@@ -62,39 +45,40 @@ const updateVoteStatusIntoDB = async (
       $inc: { total_downvote: 1 },
     });
 
-    if (postState.vote.upvote) {
+    if (reaction.vote.upvote) {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_upvote: -1 },
       });
     }
   } else if (payload.vote_type === '') {
-    (vote.upvote = false), (vote.downvote = false);
-    if (postState.vote.upvote) {
+  
+    if (reaction.vote.upvote) {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_upvote: -1 },
       });
-    } else if (postState.vote.downvote) {
+    } else if (reaction.vote.downvote) {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_downvote: -1 },
       });
     }
+   return  await Reaction.deleteOne({_id:reaction._id},{new:true})
   }
 
-  await PostState.findByIdAndUpdate(
-    postState._id,
+  await Reaction.findByIdAndUpdate(
+    reaction._id,
     { vote },
     { runValidators: true },
   );
 };
 
-const getUserActivityOfPostFromDB = async (userId: string, postId: string) => {
-  const postState = await PostState.findOne({
+const getUserReactionOfPostFromDB = async (userId: string, postId: string) => {
+  const reaction = await Reaction.findOne({
     user: objectId(userId),
     post: objectId(postId),
   });
 
   let vote_type = VoteType.EMPTY;
-  const vote = postState?.vote;
+  const vote = reaction?.vote;
 
   if (vote?.upvote) {
     vote_type = VoteType.UP;
@@ -107,8 +91,8 @@ const getUserActivityOfPostFromDB = async (userId: string, postId: string) => {
   };
 };
 
-export const PostStateService = {
-  upsertPostState,
-  updateVoteStatusIntoDB,
-  getUserActivityOfPostFromDB,
+export const ReactionService = {
+  upsertReactionIntoDB,
+  getUserReactionOfPostFromDB
+
 };

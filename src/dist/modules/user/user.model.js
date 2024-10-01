@@ -81,9 +81,9 @@ const StudySchema = new mongoose_1.Schema({
     },
 });
 const SubscriptionSchema = new mongoose_1.Schema({
-    package: {
+    subscription: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Package',
+        ref: 'Subscription',
         required: true,
     },
     subscription_start_date: {
@@ -109,7 +109,7 @@ const UserNotificationSchema = new mongoose_1.Schema({
 const UserLoginActivityLocation = new mongoose_1.Schema({
     city: {
         type: String,
-        required: true,
+        default: null
     },
     region: {
         type: String,
@@ -117,7 +117,7 @@ const UserLoginActivityLocation = new mongoose_1.Schema({
     },
     country: {
         type: String,
-        required: true,
+        default: null
     },
 });
 const LoginDeviceInfoSchema = new mongoose_1.Schema({

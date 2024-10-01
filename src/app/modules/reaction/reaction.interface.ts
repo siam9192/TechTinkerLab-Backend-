@@ -5,9 +5,10 @@ export type TVote = {
   downvote: boolean;
 };
 
-export interface IPostState {
+export interface IReaction {
   post: Types.ObjectId;
   user: Types.ObjectId;
   vote: TVote;
-  last_read_at: Date;
+  createdAt:Date,
+  updatedAt:Date
 }

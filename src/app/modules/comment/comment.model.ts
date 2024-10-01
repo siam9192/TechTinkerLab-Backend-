@@ -1,6 +1,7 @@
 import { model, Schema } from 'mongoose';
 import { IComment } from './comment.interface';
-import { TVote } from '../post-state/post-state.interface';
+import { TVote } from '../reaction/reaction.interface';
+
 
 const VoteSchema = new Schema<TVote>({
   upvote: { type: Boolean, default: false },

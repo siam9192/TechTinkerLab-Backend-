@@ -80,3 +80,13 @@ export interface IUser {
   is_blocked: boolean;
   is_deleted: boolean;
 }
+
+
+export interface IUserView {
+  personal_details?: IUserPersonalDetails;
+  profile_photo?: string;
+  profile_cover_photo?: string;
+  total_follower?: number;
+  total_following?: number;
+  is_verified?: boolean;
+}
