@@ -1,4 +1,4 @@
 interface ICategory {
-    name:string,
-    is_hidden?:boolean
+  name: string;
+  is_hidden?: boolean;
 }

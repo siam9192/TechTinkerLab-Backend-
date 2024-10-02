@@ -33,7 +33,6 @@ const getUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 const getCurrentUserLoginActivities = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user.id;
@@ -52,14 +51,13 @@ const getUserLoginActivities = catchAsync(
     const userId = req.params.userId;
     const result =
       await UserService.getCurrentUserLoginActivitiesFromDB(userId);
-      sendSuccessResponse(res, {
+    sendSuccessResponse(res, {
       statusCode: httpStatus.OK,
       message: 'User login activities retrieved successfully',
       data: result,
     });
   },
 );
-
 
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
@@ -81,17 +79,20 @@ const changeUserRole = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-const changeUserBlockStatus = catchAsync(async (req: Request, res: Response) => {
-  const userRole = req.user.role;
-  const result = await UserService.changeUserBlockStatusIntoDB(userRole, req.body);
-  sendSuccessResponse(res, {
-    statusCode: httpStatus.OK,
-    message: 'User block status updated successfully',
-    data: result,
-  });
-});
-
+const changeUserBlockStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const userRole = req.user.role;
+    const result = await UserService.changeUserBlockStatusIntoDB(
+      userRole,
+      req.body,
+    );
+    sendSuccessResponse(res, {
+      statusCode: httpStatus.OK,
+      message: 'User block status updated successfully',
+      data: result,
+    });
+  },
+);
 
 export const UserController = {
   updateProfile,
@@ -101,5 +102,5 @@ export const UserController = {
   changePassword,
   getUserLoginActivities,
   changeUserRole,
-  changeUserBlockStatus
+  changeUserBlockStatus,
 };

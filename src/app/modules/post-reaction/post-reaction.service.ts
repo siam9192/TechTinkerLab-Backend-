@@ -1,15 +1,15 @@
 import { objectId } from '../../utils/function';
 import Post from '../post/post.model';
 import { VoteType } from '../../utils/constant';
-import Reaction from './reaction.model';
+import PostReaction from './post-reaction.model';
 
-
-
-const upsertReactionIntoDB = async (
+const upsertPostReactionIntoDB = async (
   userId: string,
   payload: { postId: string; vote_type: 'UP' | 'DOWN' | '' },
 ) => {
-  let reaction = await Reaction.findOne({
+  const vote_type = payload.vote_type;
+
+  let reaction = await PostReaction.findOne({
     post: objectId(payload.postId),
     user: objectId(userId),
   }).populate('post');
@@ -18,73 +18,56 @@ const upsertReactionIntoDB = async (
     const data = {
       user: userId,
       post: payload.postId,
-      vote:{
-        upvote:payload.vote_type === 'UP',
-        downvote:payload.vote_type === 'DOWN',
-      }
+      vote_type,
     };
- 
-   return await Reaction.create(data);
+
+    return await PostReaction.create(data);
   }
 
-  const vote: any = {};
-
   if (payload.vote_type === 'UP') {
-    (vote.upvote = true), (vote.downvote = false);
     await Post.findByIdAndUpdate(payload.postId, { $inc: { total_upvote: 1 } });
-    if (reaction.vote.downvote) {
+    if (reaction.vote_type === 'DOWN') {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_downvote: -1 },
       });
     }
-  } else if (payload.vote_type === 'DOWN') {
-    vote.downvote = true;
-    vote.upvote = false;
-
+  } else if (vote_type === 'DOWN') {
     await Post.findByIdAndUpdate(payload.postId, {
       $inc: { total_downvote: 1 },
     });
 
-    if (reaction.vote.upvote) {
+    if (reaction.vote_type === 'UP') {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_upvote: -1 },
       });
     }
   } else if (payload.vote_type === '') {
-  
-    if (reaction.vote.upvote) {
+    if (reaction.vote_type === 'UP') {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_upvote: -1 },
       });
-    } else if (reaction.vote.downvote) {
+    } else if (reaction.vote_type === 'DOWN') {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_downvote: -1 },
       });
     }
-   return  await Reaction.deleteOne({_id:reaction._id},{new:true})
+    return await PostReaction.deleteOne({ _id: reaction._id }, { new: true });
   }
 
-  await Reaction.findByIdAndUpdate(
+  await PostReaction.findByIdAndUpdate(
     reaction._id,
-    { vote },
+    { vote_type },
     { runValidators: true },
   );
 };
 
 const getUserReactionOfPostFromDB = async (userId: string, postId: string) => {
-  const reaction = await Reaction.findOne({
+  const reaction = await PostReaction.findOne({
     user: objectId(userId),
     post: objectId(postId),
   });
 
-  let vote_type = VoteType.EMPTY;
-  const vote = reaction?.vote;
-
-  if (vote?.upvote) {
-    vote_type = VoteType.UP;
-  } else if (vote?.downvote) {
-    vote_type = VoteType.DOWN;
-  }
+  let vote_type = reaction?.vote_type || null;
 
   return {
     vote_type,
@@ -92,7 +75,6 @@ const getUserReactionOfPostFromDB = async (userId: string, postId: string) => {
 };
 
 export const ReactionService = {
-  upsertReactionIntoDB,
-  getUserReactionOfPostFromDB
-
+  upsertPostReactionIntoDB,
+  getUserReactionOfPostFromDB,
 };

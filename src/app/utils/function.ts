@@ -39,37 +39,46 @@ export const getCustomizePostData = (post: IPost) => {
   return result;
 };
 
-export const getCustomizeUserData = (user: IUser,personal_details?:boolean):IUserView => {
+export const getCustomizeUserData = (
+  user: IUser,
+  personal_details?: boolean,
+): IUserView => {
   const latest_subscription = user.latest_subscription;
   const is_verified = latest_subscription
     ? new Date(latest_subscription.subscription_end_date).valueOf() <
       new Date().valueOf()
     : false;
-    const data:any = {
-      username: user.username,
-      profile_photo: user.profile_photo,
-      total_follower: user.total_follower,
-      total_following: user.total_following,
-      is_verified,
-    }
-    if(personal_details){
-      data.personal_details = user.personal_details
-    }
-  return data ;
+  const data: any = {
+    username: user.username,
+    profile_photo: user.profile_photo,
+    total_follower: user.total_follower,
+    total_following: user.total_following,
+    is_verified,
+  };
+  if (personal_details) {
+    data.personal_details = user.personal_details;
+  }
+  return data;
 };
 
-
-export const convertFieldUpdateFormat = (doc:any,obj:any,objFieldName:string,avoid_fields?:string[])=>{
+export const convertFieldUpdateFormat = (
+  doc: any,
+  obj: any,
+  objFieldName: string,
+  avoid_fields?: string[],
+) => {
   Object.entries(obj).forEach(([field, value]) => {
-  
-  if(!avoid_fields || !avoid_fields.length || !avoid_fields.includes(field)){
-    doc[`${objFieldName}.${field}`] = value;
-  }
-  
+    if (
+      !avoid_fields ||
+      !avoid_fields.length ||
+      !avoid_fields.includes(field)
+    ) {
+      doc[`${objFieldName}.${field}`] = value;
+    }
   });
-}
+};
 
-export function getDaysInMonth(year:number, month:number) {
+export function getDaysInMonth(year: number, month: number) {
   // Create an empty array to store the days
   let days = [];
 
@@ -78,20 +87,19 @@ export function getDaysInMonth(year:number, month:number) {
 
   // Loop until the next month
   while (date.getMonth() === month) {
-      days.push(new Date(date).getDate()); // Add a copy of the date to the array
-      date.setDate(date.getDate() + 1); // Move to the next day
+    days.push(new Date(date).getDate()); // Add a copy of the date to the array
+    date.setDate(date.getDate() + 1); // Move to the next day
   }
 
   return days;
 }
 
-
-export function getLastDayOfMonth(year:number, month:number) {
+export function getLastDayOfMonth(year: number, month: number) {
   // Set the day to 0 of the next month to get the last day of the current month
   return new Date(year, month + 1, 0);
 }
 
-export function getFirstDayOfMonth(year:number, month:number) {
+export function getFirstDayOfMonth(year: number, month: number) {
   // Month is 0-indexed in JavaScript (January is 0, December is 11)
   return new Date(year, month, 1);
 }

@@ -2,19 +2,20 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { sendSuccessResponse } from '../../response';
 import catchAsync from '../../utils/catchAsync';
-import { ReactionService } from './reaction.service';
-
+import { ReactionService } from './post-reaction.service';
 
 const upsertPostReaction = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
-  const result = await ReactionService.upsertReactionIntoDB(userId, req.body);
+  const result = await ReactionService.upsertPostReactionIntoDB(
+    userId,
+    req.body,
+  );
   sendSuccessResponse(res, {
     statusCode: httpStatus.CREATED,
     message: 'Reaction upsert successfully',
     data: result,
   });
 });
-
 
 const getCurrentUserReactionOfPost = catchAsync(
   async (req: Request, res: Response) => {
@@ -32,7 +33,7 @@ const getCurrentUserReactionOfPost = catchAsync(
   },
 );
 
-export const ReactionController = {
+export const PostReactionController = {
   upsertPostReaction,
-  getCurrentUserReactionOfPost
+  getCurrentUserReactionOfPost,
 };

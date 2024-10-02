@@ -101,8 +101,7 @@ const UserNotificationSchema = new Schema({
 const UserLoginActivityLocation = new Schema<TLoginLocation>({
   city: {
     type: String,
-    default:null
-
+    default: null,
   },
   region: {
     type: String,
@@ -110,7 +109,7 @@ const UserLoginActivityLocation = new Schema<TLoginLocation>({
   },
   country: {
     type: String,
-    default:null
+    default: null,
   },
 });
 

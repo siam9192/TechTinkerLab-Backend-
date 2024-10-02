@@ -81,7 +81,6 @@ export interface IUser {
   is_deleted: boolean;
 }
 
-
 export interface IUserView {
   personal_details?: IUserPersonalDetails;
   profile_photo?: string;

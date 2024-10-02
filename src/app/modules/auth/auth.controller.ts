@@ -25,8 +25,8 @@ const handelSignIn = catchAsync(async (req: Request, res: Response) => {
 
 const handelGetAccessToken = catchAsync(async (req: Request, res: Response) => {
   const refreshToken = req.headers.authorization;
-  if(!refreshToken){
-    throw new AppError(httpStatus.BAD_REQUEST,'Something went wrong')
+  if (!refreshToken) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Something went wrong');
   }
   const result = await AuthService.getAccessToken(refreshToken);
   sendSuccessResponse(res, {

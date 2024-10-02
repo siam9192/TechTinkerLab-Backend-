@@ -22,15 +22,17 @@ const getUserPaymentsFromDB = async (userId: string, query: any) => {
     .sort()
     .paginate()
     .get();
-  const meta = await new QueryBuilder(Payment.find(), query).find().sort().getMeta();
+  const meta = await new QueryBuilder(Payment.find(), query)
+    .find()
+    .sort()
+    .getMeta();
   return {
     result,
     meta,
   };
 };
 
-
 export const PaymentService = {
-    getPaymentsFromDB,
-    getUserPaymentsFromDB,
-}
+  getPaymentsFromDB,
+  getUserPaymentsFromDB,
+};

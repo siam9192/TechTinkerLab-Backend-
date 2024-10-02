@@ -91,15 +91,19 @@ const getPostForUserReadFromDB = async (userId: string, postId: string) => {
   }
 
   //  if user is not verified and the post is premium content then throw an error
-  if (post.author._id.toString() !==  userId && post.is_premium && !isUserVerified) {
+  if (
+    post.author._id.toString() !== userId &&
+    post.is_premium &&
+    !isUserVerified
+  ) {
     throw new AppError(
       httpStatus.NOT_ACCEPTABLE,
       'This is premium content.Please Subscribe our monthly package to  access all of premium contents',
     );
   }
-  
+
   // Creating the new reader of the post
-  await ReaderService.createReaderIntoDB({userId,postId})
+  await ReaderService.createReaderIntoDB({ userId, postId });
 
   const result = getCustomizePostData(post);
 
@@ -182,5 +186,5 @@ export const PostService = {
   updatePostIntoDB,
   deletePostFromDB,
   getPostsFromDB,
-  getPostForUserReadFromDB
+  getPostForUserReadFromDB,
 };

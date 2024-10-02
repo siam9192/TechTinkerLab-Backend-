@@ -68,8 +68,8 @@ const unfollowUserIntoDB = async (
   payload: { unfollow_user: string },
 ) => {
   const follower = await Follower.findOne({
-    user: objectId(userId),
-    following_user: objectId(payload.unfollow_user),
+    user: objectId(payload.unfollow_user),
+    follower: objectId(userId),
   });
 
   //  Checking follower existence
@@ -118,7 +118,7 @@ const unfollowUserIntoDB = async (
 
 const getUserFollowers = async (userId: string, query: any) => {
   query.follower = objectId(userId);
-  const followers:any = await new QueryBuilder(Follower.find(), query)
+  const followers: any = await new QueryBuilder(Follower.find(), query)
     .search(['username'])
     .find()
     .sort()
@@ -130,25 +130,32 @@ const getUserFollowers = async (userId: string, query: any) => {
     .search(['username'])
     .find()
     .getMeta();
-  const result = followers.map((follower:IUser)=>getCustomizeUserData(follower))
+  const result = followers.map((follower: IUser) =>
+    getCustomizeUserData(follower),
+  );
   return {
     result,
     meta,
   };
 };
 
-const getAccountFollowStatusOfCurrentUserFromDB = async(userId:string,accountId:string)=>{
-  
+const getAccountFollowStatusOfCurrentUserFromDB = async (
+  userId: string,
+  accountId: string,
+) => {
   // Finding user account from account followers
-  const is_following = await Follower.exists({user:objectId(accountId),follower:objectId(userId)})
+  const is_following = await Follower.exists({
+    user: objectId(accountId),
+    follower: objectId(userId),
+  });
   return {
-    status:is_following? true : false  
-  }
-} 
+    status: is_following ? true : false,
+  };
+};
 
 export const FollowerService = {
   createFollowerIntoDB,
   unfollowUserIntoDB,
   getUserFollowers,
-  getAccountFollowStatusOfCurrentUserFromDB
+  getAccountFollowStatusOfCurrentUserFromDB,
 };

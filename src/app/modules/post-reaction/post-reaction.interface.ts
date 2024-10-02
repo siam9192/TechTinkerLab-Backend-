@@ -1,12 +1,11 @@
 import { Types } from 'mongoose';
 
-export type TVote = 'UP' | 'DOWN';
+export type TVoteType = 'UP' | 'DOWN';
 
-export interface ICommentReaction {
+export interface IPostReaction {
   post: Types.ObjectId;
-  comment: Types.ObjectId;
   user: Types.ObjectId;
-  vote_type: TVote;
+  vote_type: TVoteType;
   createdAt: Date;
   updatedAt: Date;
 }

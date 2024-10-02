@@ -280,7 +280,6 @@ const recoverAccount = async (payload: {
   if (!request) {
     throw new AppError(httpStatus.BAD_REQUEST, 'something went wrong');
   }
-  console.log(decoded);
 
   const user = await User.findOne({
     _id: objectId(decoded.userId),

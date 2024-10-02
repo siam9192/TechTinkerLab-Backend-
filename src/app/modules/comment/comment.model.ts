@@ -1,12 +1,5 @@
 import { model, Schema } from 'mongoose';
 import { IComment } from './comment.interface';
-import { TVote } from '../reaction/reaction.interface';
-
-
-const VoteSchema = new Schema<TVote>({
-  upvote: { type: Boolean, default: false },
-  downvote: { type: Boolean, default: false },
-});
 
 const CommentSchema = new Schema<IComment>(
   {
@@ -14,13 +7,7 @@ const CommentSchema = new Schema<IComment>(
       type: String,
       required: true,
     },
-    vote: {
-      type: VoteSchema,
-      default: {
-        upvote: false,
-        downvote: false,
-      },
-    },
+
     post: {
       type: Schema.ObjectId,
       ref: 'Post',

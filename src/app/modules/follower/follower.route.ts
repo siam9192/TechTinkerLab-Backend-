@@ -21,12 +21,15 @@ router.post(
   FollowerController.unfollowUser,
 );
 
-
 router.get(
   '/current-user',
-  auth('USER','ADMIN'),
+  auth('USER', 'ADMIN'),
   FollowerController.getCurrentUserFollowers,
 );
-router.get('/current-user/account-follow-status/:accountId',auth('USER'),FollowerController.getAccountFollowStatusOfCurrentUser)
+router.get(
+  '/current-user/account-follow-status/:accountId',
+  auth('USER'),
+  FollowerController.getAccountFollowStatusOfCurrentUser,
+);
 
 export const FollowerRouter = router;

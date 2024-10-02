@@ -10,11 +10,11 @@ import config from '../config';
 import { HandleDuplicateError } from './handleDuplicateError';
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 
-export const GlobalErrorHandler:any = (
-  err:any,
-  req:Request,
-  res:Response,
-  next:NextFunction,
+export const GlobalErrorHandler: any = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   let statusCode = 500;
   let message = 'Something went wrong!';

@@ -7,8 +7,9 @@ import { CommentRouter } from '../modules/comment/comment.route';
 import { SubscriptionRouter } from '../modules/subscription/subscription.route';
 import { PaymentRouter } from '../modules/payment/payment.route';
 import { OverviewRouter } from '../modules/overview/overview.route';
-import { ReactionRouter } from '../modules/reaction/reaction.route';
+import { PostReactionRouter } from '../modules/post-reaction/post-reaction.route';
 import { CategoryRouter } from '../modules/category/category.route';
+import { CommentReactionRouter } from '../modules/comment-reaction/comment-reaction.route';
 
 const router = Router();
 
@@ -37,27 +38,31 @@ const moduleRoutes: IModuleRoute[] = [
     path: '/categories',
     router: CategoryRouter,
   },
-  
+
   {
-    path: '/reactions',
-    router: ReactionRouter,
+    path: '/post-reactions',
+    router: PostReactionRouter,
   },
   {
     path: '/comments',
     router: CommentRouter,
   },
   {
+    path: '/comment-reactions',
+    router: CommentReactionRouter,
+  },
+  {
     path: '/subscriptions',
     router: SubscriptionRouter,
   },
   {
-    path:'/payments',
-    router:PaymentRouter
+    path: '/payments',
+    router: PaymentRouter,
   },
   {
-    path:'/overview',
-    router:OverviewRouter
-  }
+    path: '/overview',
+    router: OverviewRouter,
+  },
 ];
 
 const routes = moduleRoutes.map((route) =>

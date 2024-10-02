@@ -1,15 +1,19 @@
-
-import { model, Schema } from "mongoose";
-import { ICommentReaction, TVote } from "./comment-reaction.interface";
+import { model, Schema } from 'mongoose';
+import { ICommentReaction, TVote } from './comment-reaction.interface';
+import { VoteType } from '../../utils/constant';
 
 const VoteSchema = new Schema<TVote>({
-    upvote: { type: Boolean, default: false },
-    downvote: { type: Boolean, default: false },
-  });
-
+  upvote: { type: Boolean, default: false },
+  downvote: { type: Boolean, default: false },
+});
 
 const CommentReactionSchema = new Schema<ICommentReaction>(
-    {
+  {
+    post: {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+      required: true,
+    },
     comment: {
       type: Schema.Types.ObjectId,
       ref: 'Comment',
@@ -20,14 +24,19 @@ const CommentReactionSchema = new Schema<ICommentReaction>(
       ref: 'User',
       required: true,
     },
-  
-    vote: {
-      type: VoteSchema,
+
+    vote_type: {
+      type: String,
+      enum: Object.values(VoteType),
       required: true,
     },
-  },{
-      timestamps:true
-  })
+  },
+  {
+    timestamps: true,
+  },
+);
 
-
-  export const CommentReaction = model<ICommentReaction>('CommentReaction',CommentReactionSchema)
+export const CommentReaction = model<ICommentReaction>(
+  'CommentReaction',
+  CommentReactionSchema,
+);

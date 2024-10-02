@@ -13,19 +13,22 @@ const getPayments = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-const getCurrentUserPayments = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.user.id
-    const result = await PaymentService.getUserPaymentsFromDB(userId,req.query);
+const getCurrentUserPayments = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const result = await PaymentService.getUserPaymentsFromDB(
+      userId,
+      req.query,
+    );
     sendSuccessResponse(res, {
       statusCode: httpStatus.OK,
       message: 'Payments retrieved successfully',
       data: result,
     });
-  });
-
+  },
+);
 
 export const PaymentController = {
-    getPayments,
-    getCurrentUserPayments
-}
+  getPayments,
+  getCurrentUserPayments,
+};
