@@ -27,9 +27,10 @@ router.get(
   FollowerController.getCurrentUserFollowers,
 );
 router.get(
-  '/current-user/account-follow-status/:accountId',
+  '/current-user/account-follow-status/:username',
   auth('USER'),
   FollowerController.getAccountFollowStatusOfCurrentUser,
 );
-
+router.get('/profile/:username',FollowerController.getProfileFollowers)
+router.get('/profile/:username/followings',FollowerController.getProfileFollowings)
 export const FollowerRouter = router;

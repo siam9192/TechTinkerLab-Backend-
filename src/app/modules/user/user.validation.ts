@@ -19,8 +19,9 @@ const StudySchema = z.object({
 const UserPersonalDetailsSchema = z.object({
   name: UserNameSchema,
   study: StudySchema.optional(),
-  date_of_birth: z.string().optional(),
-  gender: z.enum(Object.values(Gender) as [string, ...string[]]),
+  date_of_birth: z.string().optional().optional(),
+  gender: z.enum(Object.values(Gender) as [string, ...string[]]).optional(),
+  about:z.string().optional()
 });
 
 const CreateUserValidation = z.object({
@@ -31,8 +32,8 @@ const CreateUserValidation = z.object({
 
 export const UpdateProfileValidation = z.object({
   personal_details: UserPersonalDetailsSchema.partial(),
-  profile_photo: z.string().optional(),
-  profile_cover_photo: z.string().optional(),
+  profile_photo: z.union([z.string(),z.null()]).optional(),
+  profile_cover_photo: z.union([z.string(),z.null()]).optional(),
 });
 
 const ChangePasswordValidation = z.object({

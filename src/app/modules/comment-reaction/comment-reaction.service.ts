@@ -4,10 +4,10 @@ import { CommentReaction } from './comment-reaction.model';
 
 const upsertCommentReactionIntoDB = async (
   userId: string,
-  payload: { commentId: string; vote_type: 'UP' | 'DOWN' | '' },
+  payload: { commentId: string; vote_type: 'UP' | 'DOWN' | null},
 ) => {
   const vote_type = payload.vote_type;
-
+ console.log(payload)
   let reaction = await CommentReaction.findOne({
     comment: objectId(payload.commentId),
     user: objectId(userId),
@@ -22,9 +22,16 @@ const upsertCommentReactionIntoDB = async (
       post: comment?.post,
       vote_type,
     };
-
+   if(vote_type === 'UP'){
+    await Comment.findByIdAndUpdate(payload.commentId,{$inc:{total_upvote:1}})
+   }
+    else if(vote_type === 'DOWN'){
+    await  Comment.findByIdAndUpdate(payload.commentId,{$inc:{total_downvote:1}})
+    }
     return await CommentReaction.create(data);
   }
+
+  
 
   if (vote_type === 'UP') {
     await Comment.findByIdAndUpdate(payload.commentId, {
@@ -35,7 +42,8 @@ const upsertCommentReactionIntoDB = async (
         $inc: { total_downvote: -1 },
       });
     }
-  } else if (vote_type === 'DOWN') {
+  }
+   else if (vote_type === 'DOWN') {
     await Comment.findByIdAndUpdate(payload.commentId, {
       $inc: { total_downvote: 1 },
     });
@@ -45,7 +53,8 @@ const upsertCommentReactionIntoDB = async (
         $inc: { total_upvote: -1 },
       });
     }
-  } else if (vote_type === '') {
+  } 
+  else if (vote_type === 'NULL') {
     if (reaction.vote_type === 'UP') {
       await Comment.findByIdAndUpdate(payload.commentId, {
         $inc: { total_upvote: -1 },
@@ -72,6 +81,7 @@ const getCurrentUserCommentsReactionOfPostFromDB = async (
   userId: string,
   postId: string,
 ) => {
+  
   const reactions = await CommentReaction.find({
     user: objectId(userId),
     post: objectId(postId),

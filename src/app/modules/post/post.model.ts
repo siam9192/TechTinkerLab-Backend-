@@ -70,6 +70,11 @@ const PostSchema = new Schema<IPost>(
       min: 0,
       default: 0,
     },
+    total_comment: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
     author: {
       type: Schema.Types.ObjectId,
       ref: 'User',

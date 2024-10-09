@@ -5,6 +5,7 @@ import Post from '../post/post.model';
 import Subscription from '../subscription/subscription.model';
 import User from '../user/user.model';
 import {
+  dateDifference,
   getDaysInMonth,
   getFirstDayOfMonth,
   getLastDayOfMonth,
@@ -67,17 +68,26 @@ const getAdminOverviewDataFromDB = async (
 
 const getCurrentUserOverviewDataFromDB = async (userId: string, query: any) => {
   const user = await User.findById(userId).select('latest_subscription');
+  
+  const latest_subscription = user?.latest_subscription
 
   // Getting all post of the user
   const posts = await Post.find({ author: objectId(userId) });
   const total_post = posts.length;
   const total_earning = 0;
   const latest_posts = posts.slice(-4, posts.length);
+   const total_reaction = posts.reduce((p,c)=>p+c.total_upvote!+c.total_downvote!,0)
+  let subscription_end_in = null;
+  if(latest_subscription){
+    subscription_end_in =  dateDifference(latest_subscription?.subscription_start_date,latest_subscription?.subscription_end_date).diffInDays
+  }
 
   const result = {
     total_post,
+    total_reaction,
     total_earning,
     latest_posts,
+    subscription_end_in
   };
 
   return result;
@@ -85,7 +95,7 @@ const getCurrentUserOverviewDataFromDB = async (userId: string, query: any) => {
 
 const getPostOverviewDataFromDB = async (
   postId: string,
-  query: { view_type: 'date' | 'month' | 'year' },
+  query: { view_type: 'month' | 'year' },
 ) => {
   const post = await Post.findById(postId);
 
@@ -106,8 +116,10 @@ const getPostOverviewDataFromDB = async (
   let readers_summery;
   let comments_summery;
   let reactions_summery;
+  
+  const overview_type = query.view_type
 
-  if (query.view_type === 'month') {
+  if (query.view_type === 'year') {
     const comments = await Comment.find({
       createdAt: { $lte: last_date_of_Year },
     });
@@ -117,8 +129,9 @@ const getPostOverviewDataFromDB = async (
         (comment) => new Date(comment.createdAt).getMonth() === monthNumber,
       ).length;
       return {
+        type:overview_type,
         month: month,
-        total_comment,
+        value:total_comment,
         upcoming: new Date().getMonth() < monthNumber, // Checking  upcoming month (if month number is getter than  current month number then true otherwise false)
       };
     });
@@ -131,8 +144,9 @@ const getPostOverviewDataFromDB = async (
         (reaction) => new Date(reaction.createdAt).getMonth() === monthNumber,
       ).length;
       return {
+        type:overview_type,
         month: month,
-        total_reaction,
+        value:total_reaction,
         upcoming: new Date().getMonth() < monthNumber, // Checking  upcoming month (if month number is getter than  current month number then true otherwise false)
       };
     });
@@ -146,12 +160,13 @@ const getPostOverviewDataFromDB = async (
       ).length;
 
       return {
+        type:overview_type,
         month: month,
-        total_reader,
+        value:total_reader,
         upcoming: new Date().getMonth() < monthNumber, // Checking  upcoming month (if month number is getter than  current month number then true otherwise false)
       };
     });
-  } else if (query.view_type === 'date') {
+  } else {
     const firstDayOfMonth = getFirstDayOfMonth(
       current_year,
       current_month_number,
@@ -165,10 +180,7 @@ const getPostOverviewDataFromDB = async (
       createdAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
     });
 
-    const readersOfCurrentDate = await Reader.find({
-      createdAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
-    });
-
+   
     const reactionsOfCurrentDate = await Reaction.find({
       createdAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
     });
@@ -178,8 +190,8 @@ const getPostOverviewDataFromDB = async (
         (comment) => new Date(comment.createdAt).getDate() === date,
       ).length;
       return {
-        date,
-        total_comment,
+        day:date,
+        value: total_comment,
         upcoming: new Date().getMonth() < date, // Checking  upcoming day (if month number is getter than  current date number then true otherwise false)
       };
     });
@@ -189,8 +201,9 @@ const getPostOverviewDataFromDB = async (
         (reader) => new Date(reader.createdAt).getDate() === date,
       ).length;
       return {
-        date,
-        total_reader,
+        type:overview_type,
+        day:date,
+        value:total_reader,
         upcoming: new Date().getMonth() < date, // Checking  upcoming day (if month number is getter than  current date number then true otherwise false)
       };
     });
@@ -200,8 +213,9 @@ const getPostOverviewDataFromDB = async (
         (comment) => new Date(comment.createdAt).getDate() === date,
       ).length;
       return {
-        date,
-        total_reaction,
+        type:overview_type,
+        day:date,
+       value: total_reaction,
         upcoming: new Date().getMonth() < date, // Checking  upcoming day (if month number is getter than  current date number then true otherwise false)
       };
     });

@@ -33,7 +33,20 @@ const getCurrentUserReactionOfPost = catchAsync(
   },
 );
 
+export const getPostReaction = catchAsync(
+  async (req: Request, res: Response) => {
+    const postId = req.params.postId;
+    const result = await ReactionService.getPostReactionFromDB(postId)
+    sendSuccessResponse(res, {
+      statusCode: httpStatus.CREATED,
+      message: 'Post reaction retrieved successfully',
+      data: result,
+    });
+  },
+);
+
 export const PostReactionController = {
   upsertPostReaction,
   getCurrentUserReactionOfPost,
+  getPostReaction
 };

@@ -41,6 +41,45 @@ const getPosts = catchAsync(async (req: Request, res: Response) => {
   sendSuccessResponse(res, {
     statusCode: httpStatus.OK,
     message: 'Posts retrieved successfully',
+    data: result.result,
+    meta:result.meta
+  });
+});
+
+
+const getPost = catchAsync(async (req: Request, res: Response) => {
+  const postId = req.params.postId
+  const result = await PostService.getPostByIdFromDB(postId);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Post retrieved successfully',
+    data: result,
+
+  });
+});
+
+
+const getProfilePosts = catchAsync(async (req: Request, res: Response) => {
+  const username = req.params.username
+  const result = await PostService.getProfilePostsFromDB(username);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Post retrieved successfully',
+    data: result,
+
+  });
+});
+
+
+
+const getCurrentUserPost = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const result = await PostService.getCurrentUserPostsFromDB(
+    userId
+  );
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.CREATED,
+    message: 'Post retrieved successfully',
     data: result,
   });
 });
@@ -59,10 +98,15 @@ const getPostForUserRead = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+
 export const PostController = {
   createPost,
   updatePost,
+  getPost,
   deletePost,
   getPosts,
+  getCurrentUserPost,
   getPostForUserRead,
+  getProfilePosts
 };

@@ -7,11 +7,13 @@ import { IPost } from './post.interface';
 import Post from './post.model';
 import { startSession } from 'mongoose';
 import { ReaderService } from '../reader/reader.service';
+import Reader from '../reader/reader.model';
 
 const createPostIntoDB = async (userId: string, payload: IPost) => {
   payload.author = objectId(userId);
   const session = await startSession();
   await session.startTransaction();
+  
   try {
     const createdPost = await Post.create([payload], { session });
     // Checking is the post created successfully
@@ -43,6 +45,36 @@ const createPostIntoDB = async (userId: string, payload: IPost) => {
 };
 
 const getPostsFromDB = async (query: any) => {
+ const sort  = query.sort
+  const sorts = [
+    {
+      type:'posted Time (ace)',
+       value:'createdAt'
+    },
+    {
+      type:'upvote (ace)',
+       value:'total_upvote'
+    },
+    {
+      type:'upvote (dec)',
+       value:'-total_upvote'
+    },
+    {
+      type:'downvote (ace)',
+       value:'createdAt'
+    },
+    {
+      type:'downvote (dec)',
+       value:'-createdAt'
+    }
+  ]
+  
+  sorts.forEach(item=>{
+    if(item.type === sort){
+      query.sort = item.value
+    }
+  })
+ query.limit = 3
   let result = await new QueryBuilder(Post.find(), query)
     .find()
     .textSearch()
@@ -62,6 +94,14 @@ const getPostsFromDB = async (query: any) => {
   };
 };
 
+const getPostByIdFromDB = async (postId:string)=>{
+  return await Post.findById(postId)
+}
+
+const getCurrentUserPostsFromDB = async (userId:string)=>{
+  return await Post.find({author:objectId(userId)}).select('title thumbnail  category is_premium createdAt')
+}
+
 const getPostForUserReadFromDB = async (userId: string, postId: string) => {
   if (!postId) {
     throw new AppError(httpStatus.NOT_FOUND, 'Post id is is required');
@@ -74,15 +114,9 @@ const getPostForUserReadFromDB = async (userId: string, postId: string) => {
 
   const userLatestSubscription = user.latest_subscription;
 
-  //  Checking is user verified by comparing current date and subscription end date
-  const isUserVerified = userLatestSubscription
-    ? new Date(userLatestSubscription.subscription_end_date).valueOf() <
-      new Date().valueOf()
-    : false;
-
   const post = await Post.findById(postId)
     .select(
-      'title content category tags is_premium total_upvote total_downvote total_read total_reader author',
+      'title content category thumbnail tags is_premium total_upvote total_downvote total_read total_reader author',
     )
     .populate('author');
 
@@ -90,21 +124,41 @@ const getPostForUserReadFromDB = async (userId: string, postId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
   }
 
-  //  if user is not verified and the post is premium content then throw an error
-  if (
-    post.author._id.toString() !== userId &&
-    post.is_premium &&
-    !isUserVerified
-  ) {
-    throw new AppError(
-      httpStatus.NOT_ACCEPTABLE,
-      'This is premium content.Please Subscribe our monthly package to  access all of premium contents',
-    );
+  //  Only post author,admin and moderator can access this post with out verification
+  if (user.role === 'USER' && userId !== post.author._id.toString()) {
+    
+    //  Checking is user verified by comparing current date and subscription end date
+    const isUserVerified = userLatestSubscription
+      ? new Date(userLatestSubscription.subscription_end_date).valueOf() <
+        new Date().valueOf()
+      : false;
+
+    //  if user is not verified and the post is premium content then throw an error
+    if (
+      post.author._id.toString() !== userId &&
+      post.is_premium &&
+      !isUserVerified
+    ) {
+      throw new AppError(
+        httpStatus.NOT_ACCEPTABLE,
+        'This is premium content.Please Subscribe our monthly package to  access all of premium contents',
+      );
+    }
   }
 
+  const reader = await Reader.findOne({user:objectId(userId)})
+  
+  if(reader){
+  await Post.findByIdAndUpdate(postId,{$inc:{total_reader:1}})
+  }
+  
+  else {
   // Creating the new reader of the post
-  await ReaderService.createReaderIntoDB({ userId, postId });
-
+  Reader.create({user:userId,post:postId});
+  }
+   // await Post.findByIdAndUpdate(postId,{total_reader:{$inc:1}})
+ await Post.findByIdAndUpdate(postId,{$inc:{total_read:1}})
+ 
   const result = getCustomizePostData(post);
 
   return result;
@@ -122,11 +176,10 @@ export const updatePostIntoDB = async (
   } else if (post.author.toString() !== userId) {
     throw new AppError(httpStatus.BAD_GATEWAY, 'Post can not be updated');
   }
-
-  const updatedPost = await Post.findByIdAndUpdate(postId, payload, {
-    new: true,
-  });
-  if (!updatedPost) {
+  
+  const updatedPost = await Post.updateOne({_id:objectId(postId)}, payload);
+   
+  if (!updatedPost.modifiedCount) {
     throw new AppError(httpStatus.BAD_GATEWAY, 'Post can not be updated');
   }
   return null;
@@ -181,10 +234,25 @@ const deletePostFromDB = async (userId: string, postId: string) => {
   }
 };
 
+const getProfilePostsFromDB = async (username:string)=>{
+  const user = await User.findOne({username})
+  if(!user){
+    throw new AppError(httpStatus.NOT_FOUND,'User not found')
+  }
+ const result = await Post.find({author:user?._id}).populate('author')
+ return result.map((post) => getCustomizePostData(post));
+ 
+}
+
+
+
 export const PostService = {
   createPostIntoDB,
   updatePostIntoDB,
   deletePostFromDB,
+  getPostByIdFromDB,
   getPostsFromDB,
   getPostForUserReadFromDB,
+  getCurrentUserPostsFromDB,
+  getProfilePostsFromDB,
 };

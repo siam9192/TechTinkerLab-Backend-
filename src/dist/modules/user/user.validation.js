@@ -19,8 +19,8 @@ const StudySchema = zod_1.z.object({
 const UserPersonalDetailsSchema = zod_1.z.object({
     name: UserNameSchema,
     study: StudySchema.optional(),
-    date_of_birth: zod_1.z.string().optional(),
-    gender: zod_1.z.enum(Object.values(constant_1.Gender)),
+    date_of_birth: zod_1.z.string().optional().optional(),
+    gender: zod_1.z.enum(Object.values(constant_1.Gender)).optional(),
 });
 const CreateUserValidation = zod_1.z.object({
     personal_details: UserPersonalDetailsSchema,
@@ -41,16 +41,16 @@ const ChangePasswordValidation = zod_1.z.object({
 });
 const ChangeUserRoleValidation = zod_1.z.object({
     user_id: zod_1.z.string(),
-    role: zod_1.z.enum(Object.values(constant_1.Role))
+    role: zod_1.z.enum(Object.values(constant_1.Role)),
 });
 const ChangeUserBlockStatusValidation = zod_1.z.object({
     user_id: zod_1.z.string(),
-    status: zod_1.z.boolean()
+    status: zod_1.z.boolean(),
 });
 exports.UserValidations = {
     CreateUserValidation,
     UpdateProfileValidation: exports.UpdateProfileValidation,
     ChangePasswordValidation,
     ChangeUserRoleValidation,
-    ChangeUserBlockStatusValidation
+    ChangeUserBlockStatusValidation,
 };

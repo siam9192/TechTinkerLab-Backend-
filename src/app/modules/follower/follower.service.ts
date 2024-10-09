@@ -139,13 +139,49 @@ const getUserFollowers = async (userId: string, query: any) => {
   };
 };
 
+const getProfileFollowersFromDB = async (username:string)=> {
+  const user = await User.findOne({username})
+   
+  if(!user){
+    throw new AppError(httpStatus.NOT_FOUND,'User not found')
+  }
+  
+  const followers = await Follower.find({user:user._id}).populate('follower').select('follower')
+ 
+  const result = followers.map((follower:any) =>getCustomizeUserData(follower.follower))
+  return result
+ 
+ 
+};
+const getProfileFollowingsFromDB = async (username:string)=> {
+  const user = await User.findOne({username})
+   
+  if(!user){
+    throw new AppError(httpStatus.NOT_FOUND,'User not found')
+  }
+  
+  const followers = await Follower.find({follower:user._id}).populate('follower').select('follower')
+ 
+  const result = followers.map((follower:any) =>getCustomizeUserData(follower.follower))
+  return result
+ 
+ 
+};
+
+
+
+
 const getAccountFollowStatusOfCurrentUserFromDB = async (
   userId: string,
-  accountId: string,
+ username: string,
 ) => {
+  const user = await User.findOne({username})
+  if(!user){
+    return null
+  }
   // Finding user account from account followers
   const is_following = await Follower.exists({
-    user: objectId(accountId),
+    user: user?._id,
     follower: objectId(userId),
   });
   return {
@@ -158,4 +194,6 @@ export const FollowerService = {
   unfollowUserIntoDB,
   getUserFollowers,
   getAccountFollowStatusOfCurrentUserFromDB,
+  getProfileFollowersFromDB,
+  getProfileFollowingsFromDB,
 };

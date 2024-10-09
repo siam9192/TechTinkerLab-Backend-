@@ -154,11 +154,12 @@ const UserPersonalDetailsSchema = new Schema<IUserPersonalDetails>({
   gender: {
     type: String,
     enum: ['MALE', 'FEMALE', 'OTHER'],
-    required: true,
+    default:null,
   },
   address: { type: AddressSchema, default: null },
   study: { type: StudySchema, default: null },
   profession: { type: String, default: null },
+  about:{ type: String, default: null }
 });
 
 const UserSchema = new Schema<IUser>(

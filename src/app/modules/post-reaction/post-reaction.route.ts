@@ -19,5 +19,5 @@ router.get(
   auth('USER'),
   PostReactionController.getCurrentUserReactionOfPost,
 );
-
+router.get('/post/:postId',PostReactionController.getPostReaction)
 export const PostReactionRouter = router;

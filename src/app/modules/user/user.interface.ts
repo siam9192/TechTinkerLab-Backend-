@@ -56,13 +56,15 @@ export type TLoginActivity = {
 export interface IUserPersonalDetails {
   name: TName;
   date_of_birth?: string;
-  gender: TGender;
+  gender?: TGender;
   address?: TAddress;
   study?: TStudy;
   profession?: string;
+  about?:string
 }
 
 export interface IUser {
+  _id:Types.ObjectId,
   personal_details: IUserPersonalDetails;
   profile_photo?: string;
   profile_cover_photo?: string;

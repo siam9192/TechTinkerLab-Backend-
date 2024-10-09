@@ -49,6 +49,7 @@ export const getCustomizeUserData = (
       new Date().valueOf()
     : false;
   const data: any = {
+    _id:user._id,
     username: user.username,
     profile_photo: user.profile_photo,
     total_follower: user.total_follower,
@@ -103,3 +104,21 @@ export function getFirstDayOfMonth(year: number, month: number) {
   // Month is 0-indexed in JavaScript (January is 0, December is 11)
   return new Date(year, month, 1);
 }
+
+export function dateDifference(startDate: Date, endDate: Date) {
+  // Difference in milliseconds
+  const diffInMs = Math.abs(endDate.getTime() - startDate.getTime());
+
+  // Convert milliseconds into days, hours, minutes, etc.
+  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24)); // Difference in days
+  const diffInHours = Math.ceil(diffInMs / (1000 * 60 * 60));     // Difference in hours
+  const diffInMinutes = Math.ceil(diffInMs / (1000 * 60));        // Difference in minutes
+
+  return {
+    diffInMs,
+    diffInDays,
+    diffInHours,
+    diffInMinutes,
+  };
+}
+

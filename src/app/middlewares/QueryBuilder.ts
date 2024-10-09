@@ -31,7 +31,7 @@ class QueryBuilder<T> {
     for (let field of excludeFields) {
       delete queryObj[field];
     }
-
+   console.log(queryObj)
     this.modelQuery = this.modelQuery.find({ ...queryObj });
     return this;
   }
@@ -72,7 +72,7 @@ class QueryBuilder<T> {
     const page = Number(this.query.page) || 1;
     const limit = Number(this.query.limit) || 10;
     const skip = (page - 1) * limit;
-
+   
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
     return this;
   }

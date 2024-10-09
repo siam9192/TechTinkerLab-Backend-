@@ -16,6 +16,7 @@ export interface IPost {
   total_reader?: number;
   total_gained_follower?: number;
   total_lost_follower?: number;
+  total_comment?:number,
   author: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;

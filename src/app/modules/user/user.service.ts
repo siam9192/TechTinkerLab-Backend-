@@ -9,7 +9,7 @@ import {
   getCustomizeUserData,
   objectId,
 } from '../../utils/function';
-import { doc } from 'prettier';
+
 import { Role } from '../../utils/constant';
 
 const createUserIntoDB = async (payload: ICreateUser) => {
@@ -20,6 +20,39 @@ const createUserIntoDB = async (payload: ICreateUser) => {
 
   return await User.create(payload);
 };
+
+const getUserProfileFromDB = async (username:string)=>{
+  const user = await User.findOne({username})
+  //  Checking user existence
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const userLatestSubscription = user.latest_subscription;
+
+  //  Checking is user verified by comparing current date and subscription end date
+  const is_verified = userLatestSubscription
+    ? new Date(userLatestSubscription.subscription_end_date).valueOf() <
+      new Date().valueOf()
+    : false;
+
+  const data = {
+    _id: user._id,
+    username:user.username,
+    email: user.email,
+    profile_photo:user.profile_photo,
+    profile_cover_photo:user.profile_cover_photo,
+    personal_details: user.personal_details,
+    total_post:user.total_post,
+    total_follower:user.total_follower,
+    total_following:user.total_following,
+    role: user.role,
+    is_verified
+  };
+ 
+  return data;
+  
+}
 
 const getUsersFromDB = async () => {
   // Getting users
@@ -47,8 +80,11 @@ const getCurrentUserFromDB = async (userId: string) => {
 
   const data = {
     _id: user._id,
-    personal_details: user.personal_details,
+    username:user.username,
     email: user.email,
+    profile_photo:user.profile_photo,
+    profile_cover_photo:user.profile_cover_photo,
+    personal_details: user.personal_details,
     role: user.role,
     is_verified,
   };
@@ -110,6 +146,13 @@ export const updateProfileIntoDB = async (
 ) => {
   const updateDoc: any = {};
 
+  if(payload.profile_cover_photo){
+    updateDoc.profile_cover_photo = payload.profile_cover_photo
+  }
+  if(payload.profile_photo){
+    updateDoc.profile_photo = payload.profile_photo
+  }
+
   const personal_details = payload.personal_details;
 
   if (personal_details?.name) {
@@ -135,7 +178,6 @@ export const updateProfileIntoDB = async (
       'personal_details.study',
     );
   }
-
   if (personal_details) {
     convertFieldUpdateFormat(
       updateDoc,
@@ -236,4 +278,5 @@ export const UserService = {
   getUserLoginActivities,
   changeUserRoleIntoDB,
   changeUserBlockStatusIntoDB,
+  getUserProfileFromDB
 };

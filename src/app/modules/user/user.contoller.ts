@@ -24,6 +24,17 @@ const getCurrentUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getUserProfile = catchAsync(async (req: Request, res: Response) => {
+  const username = req.params.username
+  const result = await UserService.getUserProfileFromDB(username);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'User profile  retrieved successfully',
+    data: result,
+  });
+});
+
+
 const getUsers = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.getUsersFromDB();
   sendSuccessResponse(res, {
@@ -103,4 +114,5 @@ export const UserController = {
   getUserLoginActivities,
   changeUserRole,
   changeUserBlockStatus,
+  getUserProfile
 };

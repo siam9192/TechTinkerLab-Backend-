@@ -191,7 +191,6 @@ const recoverAccount = (payload) => __awaiter(void 0, void 0, void 0, function* 
     if (!request) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'something went wrong');
     }
-    console.log(decoded);
     const user = yield user_model_1.default.findOne({
         _id: (0, function_1.objectId)(decoded.userId),
         is_deleted: false,

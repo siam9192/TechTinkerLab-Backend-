@@ -40,6 +40,23 @@ const getCurrentUserFollowers = catchAsync(
 const getAccountFollowStatusOfCurrentUser = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user.id;
+    const accountUsername = req.params.username;
+    const result =
+      await FollowerService.getAccountFollowStatusOfCurrentUserFromDB(
+        userId,
+       accountUsername,
+      );
+    sendSuccessResponse(res, {
+      statusCode: httpStatus.CREATED,
+      message: 'Follow status retrieved successfully',
+      data: result,
+    });
+  },
+);
+
+const getProfileFollowers = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user.id;
     const accountId = req.params.accountId;
     const result =
       await FollowerService.getAccountFollowStatusOfCurrentUserFromDB(
@@ -53,10 +70,25 @@ const getAccountFollowStatusOfCurrentUser = catchAsync(
     });
   },
 );
-
+const getProfileFollowings = catchAsync(
+  async (req: Request, res: Response) => {
+     const username = req.params.username
+    const result =
+      await FollowerService.getProfileFollowingsFromDB(
+       username
+      );
+    sendSuccessResponse(res, {
+      statusCode: httpStatus.CREATED,
+      message: 'Follow status retrieved successfully',
+      data: result,
+    });
+  },
+);
 export const FollowerController = {
   createFollower,
   unfollowUser,
   getCurrentUserFollowers,
   getAccountFollowStatusOfCurrentUser,
+  getProfileFollowers,
+  getProfileFollowings
 };

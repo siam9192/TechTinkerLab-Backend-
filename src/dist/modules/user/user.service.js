@@ -29,7 +29,7 @@ const getUsersFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
     // Getting users
     const users = yield user_model_1.default.find();
     // Return the users data with customize format
-    return users.map(user => (0, function_1.getCustomizeUserData)(user, true));
+    return users.map((user) => (0, function_1.getCustomizeUserData)(user, true));
 });
 const getCurrentUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.default.findById(userId);
@@ -45,8 +45,11 @@ const getCurrentUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, funct
         : false;
     const data = {
         _id: user._id,
-        personal_details: user.personal_details,
+        username: user.username,
         email: user.email,
+        profile_photo: user.profile_photo,
+        cover_photo: user.profile_cover_photo,
+        personal_details: user.personal_details,
         role: user.role,
         is_verified,
     };
@@ -112,7 +115,7 @@ const getUserLoginActivities = (userId) => __awaiter(void 0, void 0, void 0, fun
 });
 const changeUserRoleIntoDB = (currentUserRole, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.default.findById(payload.user_id);
-    // Checking user existence 
+    // Checking user existence
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
@@ -120,11 +123,14 @@ const changeUserRoleIntoDB = (currentUserRole, payload) => __awaiter(void 0, voi
     if (user.role === constant_1.Role.ADMIN) {
         throw new AppError_1.default(http_status_1.default.NOT_ACCEPTABLE, 'Admin role can not be changed because only admin can changed his own role');
     }
-    // Moderator can not change another moderator or his own role 
+    // Moderator can not change another moderator or his own role
     else if (user.role === constant_1.Role.MODERATOR && currentUserRole === constant_1.Role.MODERATOR) {
         throw new AppError_1.default(http_status_1.default.NOT_ACCEPTABLE, 'Only Admin can changed his own role');
     }
-    const updateStatus = yield user_model_1.default.updateOne({ _id: user._id, role: payload.role });
+    const updateStatus = yield user_model_1.default.updateOne({
+        _id: user._id,
+        role: payload.role,
+    });
     if (!updateStatus.modifiedCount) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Role can not be changed.Something want wrong');
     }
@@ -152,5 +158,5 @@ exports.UserService = {
     getCurrentUserLoginActivitiesFromDB,
     getUserLoginActivities,
     changeUserRoleIntoDB,
-    changeUserBlockStatusIntoDB
+    changeUserBlockStatusIntoDB,
 };

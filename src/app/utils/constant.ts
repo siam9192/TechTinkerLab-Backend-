@@ -21,7 +21,7 @@ export const Roles = Object.values(Role);
 export const VoteType = {
   UP: 'UP',
   DOWN: 'DOWN',
-  EMPTY: '',
+  NULL: 'NULL',
 };
 
 export const months = [

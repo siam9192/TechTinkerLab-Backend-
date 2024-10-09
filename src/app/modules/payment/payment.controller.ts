@@ -23,7 +23,8 @@ const getCurrentUserPayments = catchAsync(
     sendSuccessResponse(res, {
       statusCode: httpStatus.OK,
       message: 'Payments retrieved successfully',
-      data: result,
+      data: result.result,
+      meta:result.meta
     });
   },
 );

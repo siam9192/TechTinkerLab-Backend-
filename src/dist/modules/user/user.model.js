@@ -109,7 +109,7 @@ const UserNotificationSchema = new mongoose_1.Schema({
 const UserLoginActivityLocation = new mongoose_1.Schema({
     city: {
         type: String,
-        default: null
+        default: null,
     },
     region: {
         type: String,
@@ -117,7 +117,7 @@ const UserLoginActivityLocation = new mongoose_1.Schema({
     },
     country: {
         type: String,
-        default: null
+        default: null,
     },
 });
 const LoginDeviceInfoSchema = new mongoose_1.Schema({
@@ -158,7 +158,7 @@ const UserPersonalDetailsSchema = new mongoose_1.Schema({
     gender: {
         type: String,
         enum: ['MALE', 'FEMALE', 'OTHER'],
-        required: true,
+        default: null,
     },
     address: { type: AddressSchema, default: null },
     study: { type: StudySchema, default: null },

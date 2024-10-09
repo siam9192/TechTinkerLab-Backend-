@@ -8,23 +8,30 @@ const router = Router();
 
 router.post(
   '/create',
-  auth('USER'),
+  auth('USER','MODERATOR','ADMIN'),
   validateRequest(PostValidations.CreatePostValidationSchema),
   PostController.createPost,
 );
 
 router.get('/', PostController.getPosts);
+router.get('/by-id/:postId',auth('ADMIN','MODERATOR','USER'),PostController.getPost)
+router.get('/current-user', auth('USER','MODERATOR','ADMIN'),PostController.getCurrentUserPost)
+router.get('/profile/:username',PostController.getProfilePosts)
+
 router.get(
   '/user-read/:postId',
   auth('USER'),
   PostController.getPostForUserRead,
 );
 
+
 router.put(
   '/:postId',
-  auth('USER'),
+   auth('USER','MODERATOR','ADMIN'),
   validateRequest(PostValidations.UpdatePostValidationSchema),
   PostController.updatePost,
 );
-router.delete('/:postId', auth('USER'), PostController.deletePost);
+router.delete('/:postId', auth('USER','MODERATOR','ADMIN'), PostController.deletePost);
 export const PostRouter = router;
+
+

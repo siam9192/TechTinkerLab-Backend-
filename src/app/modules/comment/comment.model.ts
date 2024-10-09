@@ -1,5 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IComment } from './comment.interface';
+import { number } from 'zod';
 
 const CommentSchema = new Schema<IComment>(
   {
@@ -18,6 +19,14 @@ const CommentSchema = new Schema<IComment>(
       ref: 'User',
       required: true,
     },
+    total_upvote:{
+      type:Number,
+      default:0
+    },
+    total_downvote:{
+      type:Number,
+      default:0
+    }
   },
   {
     timestamps: true,

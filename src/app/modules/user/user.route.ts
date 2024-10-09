@@ -21,6 +21,7 @@ router.get(
   UserController.getCurrentUserLoginActivities,
 );
 
+router.get('/profile/:username',UserController.getUserProfile)
 router.patch(
   '/update-profile',
   auth('USER'),
@@ -46,5 +47,7 @@ router.patch(
   validateRequest(UserValidations.ChangeUserBlockStatusValidation),
   UserController.changeUserBlockStatus,
 );
+
+
 
 export const UserRouter = router;

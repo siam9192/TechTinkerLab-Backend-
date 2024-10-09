@@ -1,12 +1,12 @@
 import { objectId } from '../../utils/function';
 import Post from '../post/post.model';
-import { VoteType } from '../../utils/constant';
 import PostReaction from './post-reaction.model';
 
 const upsertPostReactionIntoDB = async (
   userId: string,
   payload: { postId: string; vote_type: 'UP' | 'DOWN' | '' },
 ) => {
+  
   const vote_type = payload.vote_type;
 
   let reaction = await PostReaction.findOne({
@@ -20,12 +20,17 @@ const upsertPostReactionIntoDB = async (
       post: payload.postId,
       vote_type,
     };
-
+    if(vote_type === 'UP'){
+     await Post.findByIdAndUpdate(payload.postId,{$inc:{total_upvote:1}})
+    }
+    else if(vote_type === 'DOWN'){
+    await  Post.findByIdAndUpdate(payload.postId,{$inc:{total_downvote:1}})
+    }
     return await PostReaction.create(data);
   }
-
+  
   if (payload.vote_type === 'UP') {
-    await Post.findByIdAndUpdate(payload.postId, { $inc: { total_upvote: 1 } });
+   const x = await Post.findByIdAndUpdate(payload.postId, { $inc: { total_upvote: 1 } });
     if (reaction.vote_type === 'DOWN') {
       await Post.findByIdAndUpdate(payload.postId, {
         $inc: { total_downvote: -1 },
@@ -34,7 +39,7 @@ const upsertPostReactionIntoDB = async (
   } else if (vote_type === 'DOWN') {
     await Post.findByIdAndUpdate(payload.postId, {
       $inc: { total_downvote: 1 },
-    });
+    },{runValidators:true});
 
     if (reaction.vote_type === 'UP') {
       await Post.findByIdAndUpdate(payload.postId, {
@@ -74,7 +79,17 @@ const getUserReactionOfPostFromDB = async (userId: string, postId: string) => {
   };
 };
 
+export const getPostReactionFromDB = async (postId:string)=>{
+  const upvote = await PostReaction.find({post:objectId(postId),vote_type:'UP'}).countDocuments()
+  const downvote  = await PostReaction.find({post:objectId(postId),vote_type:'DOWN'}).countDocuments()
+  return {
+    upvote,
+    downvote
+  }
+}
+
 export const ReactionService = {
   upsertPostReactionIntoDB,
   getUserReactionOfPostFromDB,
+  getPostReactionFromDB
 };

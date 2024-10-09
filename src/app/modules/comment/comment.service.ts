@@ -8,6 +8,7 @@ import {
 import Post from '../post/post.model';
 import Comment from './comment.model';
 import QueryBuilder from '../../middlewares/QueryBuilder';
+import { CommentReaction } from '../comment-reaction/comment-reaction.model';
 
 const createCommentIntoDB = async (
   userId: string,
@@ -24,6 +25,7 @@ const createCommentIntoDB = async (
     post: payload.postId,
     author: userId,
   };
+  await Post.findByIdAndUpdate(payload.postId,{$inc:{total_comment:1}})
   return await Comment.create(commentData);
 };
 
@@ -39,7 +41,7 @@ const updateCommentIntoDB = async (
   if (comment.author.toString() !== userId) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Comment can not be updated');
   }
-
+  
   return await Comment.findByIdAndUpdate(
     payload.commentId,
     { comment: payload.comment },
@@ -49,7 +51,7 @@ const updateCommentIntoDB = async (
 
 const deleteCommentFromDB = async (userId: string, commentId: string) => {
   const comment = await Comment.findById(commentId);
-
+   
   if (!comment) {
     throw new AppError(httpStatus.NOT_FOUND, 'Comment not found');
   }
@@ -57,24 +59,35 @@ const deleteCommentFromDB = async (userId: string, commentId: string) => {
   if (comment.author.toString() !== userId) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Comment can not be updated');
   }
+  // const reaction = await CommentReaction.findOne({comment:comment._id,user:objectId(userId)})
+
+  // if(reaction){
+  //   if(reaction.vote_type === 'DOWN'){
+
+  //   }
+  // }
+  await Post.findByIdAndUpdate(comment.post,{$inc:{total_comment:-1}})
   return await Comment.findByIdAndDelete(commentId, { new: true });
 };
 
 const getPostCommentsFromDB = async (postId: string, query: any) => {
-  let comments: any[] = await new QueryBuilder(Comment.find(), query)
+  query.post = postId
+ 
+  let comments: any[] = await new QueryBuilder(Comment.find(), query).find()
     .sort()
     .paginate()
     .populate('author')
     .get();
+   
 
-  const meta = await new QueryBuilder(Comment.find(), query).getMeta();
+  const meta = await new QueryBuilder(Comment.find(), query).find().getMeta();
 
-  comments = comments.map((comment) => {
+  comments =  comments.map((comment) => {
     comment.author = getCustomizeUserData(comment.author);
-
     return comment;
   });
-
+ 
+  
   return {
     result: comments,
     meta,
