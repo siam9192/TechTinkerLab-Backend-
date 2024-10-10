@@ -2,7 +2,7 @@ import { Request } from 'express';
 import config from '../../config';
 import { generateJwtToken, verifyToken } from '../../utils/jwt';
 import { UserService } from '../user/user.service';
-import { ICreateUser, ISignIn } from './auth.interface';
+import { IActivity, ICreateUser, ISignIn } from './auth.interface';
 import axios from 'axios';
 import useragent from 'useragent';
 import User from '../user/user.model';
@@ -14,6 +14,7 @@ import AccountRecoverRequest from '../account-recover-request/account-recover-re
 import { generateOTP, objectId } from '../../utils/function';
 import sendAccountRecoverEmail from '../../email/account-recover-email';
 import { IAccountRecoverRequest } from '../account-recover-request/account-recover-request.interface';
+import { UserActivityService } from '../user-activity/user-activity.service';
 
 const signup = async (payload: ICreateUser, req: Request) => {
   const user = await User.findOne({
@@ -36,17 +37,14 @@ const signup = async (payload: ICreateUser, req: Request) => {
       throw new AppError(httpStatus.NOT_ACCEPTABLE, 'User is already exists');
     }
   }
-
-  payload.login_activities = [
-    {
-      device_info: {
-        device: 'Redmi note 10',
-      },
-      login_date: new Date(),
-    },
-  ];
+ 
 
   const createdUser = await UserService.createUserIntoDB(payload);
+  const activity = {
+    ...payload.activity,
+    user:createdUser._id
+  }
+  await UserActivityService.createUserActivityIntoDB('Login',activity)
 
   const tokenPayload = {
     id: createdUser._id,
@@ -77,8 +75,7 @@ const signIn = async (payload: ISignIn) => {
     email: payload.email,
     is_deleted: false,
   }).select('password role');
-
-  // Checking user existence
+ 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'Account not found');
   }
@@ -95,7 +92,12 @@ const signIn = async (payload: ISignIn) => {
     id: user._id,
     role: user.role,
   };
-
+   
+  const activity = {
+    ...payload.activity,
+    user:user._id
+  }
+  await UserActivityService.createUserActivityIntoDB('Login',activity)
   // Generating access token
   const accessToken = await generateJwtToken(
     tokenPayload,
@@ -160,13 +162,12 @@ const forgetPassword = async (payload: IAccountRecoverRequest) => {
   const otp = generateOTP();
 
   // Sending otp
-  console.log(
+ 
     await sendAccountRecoverEmail(
       user.email,
       user.personal_details.name.first_name,
       otp,
     ),
-  );
 
   payload.otp = await bcryptHash(otp);
 
@@ -262,6 +263,7 @@ const recoverAccount = async (payload: {
   secret: string;
   password: string;
 }) => {
+  
   // Decoding the secret
   const decoded = (await verifyToken(
     payload.secret,
@@ -317,6 +319,12 @@ const recoverAccount = async (payload: {
   return null;
 };
 
+
+const logout = async(userId:string,payload:IActivity)=>{
+    payload.user = objectId(userId)
+    await UserActivityService.createUserActivityIntoDB('Logout',payload)
+}
+
 export const AuthService = {
   signup,
   signIn,
@@ -324,4 +332,5 @@ export const AuthService = {
   forgetPassword,
   verifyForgetPasswordRequest,
   recoverAccount,
+  logout
 };

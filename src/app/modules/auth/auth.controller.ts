@@ -65,6 +65,18 @@ const handelRecoverAccount = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const handelLogout = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id
+  const result = await AuthService.logout(userId,req.body);
+  sendSuccessResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Logout successful',
+    data: result,
+  });
+});
+
+
+
 export const AuthController = {
   handelSignup,
   handelSignIn,
@@ -72,4 +84,5 @@ export const AuthController = {
   handelForgetPassword,
   handelVerifyForgetPasswordRequest,
   handelRecoverAccount,
+  handelLogout
 };

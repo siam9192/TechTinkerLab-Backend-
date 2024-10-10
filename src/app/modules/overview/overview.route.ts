@@ -4,7 +4,9 @@ import auth from '../../middlewares/auth';
 
 const router = Router();
 
-router.get('/admin', auth('ADMIN'), OverviewController.getAdminOverview);
+router.get('/admin', 
+  auth('ADMIN'),
+   OverviewController.getAdminOverview);
 
 router.get(
   '/current-user',

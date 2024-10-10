@@ -61,7 +61,7 @@ const getUserLoginActivities = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const result =
-      await UserService.getCurrentUserLoginActivitiesFromDB(userId);
+      await UserService.getUserLoginActivities(userId);
     sendSuccessResponse(res, {
       statusCode: httpStatus.OK,
       message: 'User login activities retrieved successfully',

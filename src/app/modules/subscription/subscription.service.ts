@@ -128,8 +128,14 @@ const packageSubscriptionPaymentCancel = async (
   res.redirect(redirect_url);
 };
 
+export const getCurrentUserLatestSubscriptionFromDB  = async (userId:string)=>{
+  const subscription = await Subscription.findOne({user:objectId(userId)}).populate('package')
+  return subscription
+}
+
 export const SubscriptionService = {
   packageSubscriptionRequest,
   packageSubscriptionPaymentSuccess,
   packageSubscriptionPaymentCancel,
+  getCurrentUserLatestSubscriptionFromDB
 };

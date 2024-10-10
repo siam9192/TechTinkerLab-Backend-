@@ -163,6 +163,7 @@ const UserPersonalDetailsSchema = new mongoose_1.Schema({
     address: { type: AddressSchema, default: null },
     study: { type: StudySchema, default: null },
     profession: { type: String, default: null },
+    about: { type: String, default: null }
 });
 const UserSchema = new mongoose_1.Schema({
     personal_details: {

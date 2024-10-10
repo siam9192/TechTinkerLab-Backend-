@@ -5,7 +5,9 @@ import catchAsync from '../../utils/catchAsync';
 import { OverviewService } from './overview.service';
 
 const getAdminOverview = catchAsync(async (req: Request, res: Response) => {
+ 
   const result = await OverviewService.getAdminOverviewDataFromDB(req.query);
+  
   sendSuccessResponse(res, {
     statusCode: httpStatus.OK,
     message: 'Overview Data retrieved successfully',

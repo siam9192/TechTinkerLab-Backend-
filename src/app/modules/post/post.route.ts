@@ -20,7 +20,7 @@ router.get('/profile/:username',PostController.getProfilePosts)
 
 router.get(
   '/user-read/:postId',
-  auth('USER'),
+  auth('USER','ADMIN','MODERATOR'),
   PostController.getPostForUserRead,
 );
 

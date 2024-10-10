@@ -36,7 +36,9 @@ const deleteComment = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getPostComments = catchAsync(async (req: Request, res: Response) => {
+
   const postId = req.params.postId;
+  
   const result = await CommentService.getPostCommentsFromDB(postId, req.query);
   sendSuccessResponse(res, {
     statusCode: httpStatus.OK,

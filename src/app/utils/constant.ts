@@ -38,3 +38,9 @@ export const months = [
   'November',
   'December',
 ];
+
+
+export const UserActivityType = {
+  LOGIN:'Login',
+  Logout:'Logout'
+}

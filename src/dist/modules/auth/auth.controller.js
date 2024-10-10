@@ -70,6 +70,15 @@ const handelRecoverAccount = (0, catchAsync_1.default)((req, res) => __awaiter(v
         data: result,
     });
 }));
+const handelLogout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.id;
+    const result = yield auth_service_1.AuthService.logout(userId, req.body);
+    (0, response_1.sendSuccessResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        message: 'Logout successful',
+        data: result,
+    });
+}));
 exports.AuthController = {
     handelSignup,
     handelSignIn,
@@ -77,4 +86,5 @@ exports.AuthController = {
     handelForgetPassword,
     handelVerifyForgetPasswordRequest,
     handelRecoverAccount,
+    handelLogout
 };

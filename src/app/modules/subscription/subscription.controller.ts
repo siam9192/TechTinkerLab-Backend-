@@ -47,8 +47,24 @@ const handelPackageSubscriptionPaymentCancel = catchAsync(
   },
 );
 
+const getCurrentUserLatestSubscription = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user.id
+    
+    const result = await SubscriptionService.getCurrentUserLatestSubscriptionFromDB(
+   userId
+    );
+    sendSuccessResponse(res, {
+      statusCode: httpStatus.OK,
+      message: 'Latest Subscription Retrieved successfully',
+      data: result,
+    });
+  },
+);
+
 export const SubscriptionController = {
   handelPackageSubscriptionRequest,
   handelPackageSubscriptionPaymentSuccess,
   handelPackageSubscriptionPaymentCancel,
+  getCurrentUserLatestSubscription
 };

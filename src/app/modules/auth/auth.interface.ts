@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import {
   IUserPersonalDetails,
   TLoginActivity,
@@ -13,10 +14,17 @@ export interface ICreateUser {
   username: string;
   password: string;
   role?: TRole;
-  login_activities: TLoginActivity[];
+  activity: IActivity;
+}
+
+export interface IActivity {
+  user:Types.ObjectId
+  browser:string,
+  ip_address:string
 }
 
 export interface ISignIn {
   email: string;
   password: string;
+  activity:IActivity
 }

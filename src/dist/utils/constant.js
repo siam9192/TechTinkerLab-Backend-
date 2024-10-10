@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.months = exports.VoteType = exports.Roles = exports.PaymentStatus = exports.Role = exports.Gender = void 0;
+exports.UserActivityType = exports.months = exports.VoteType = exports.Roles = exports.PaymentStatus = exports.Role = exports.Gender = void 0;
 exports.Gender = {
     MALE: 'MALE',
     FEMALE: 'FEMALE',
@@ -20,7 +20,7 @@ exports.Roles = Object.values(exports.Role);
 exports.VoteType = {
     UP: 'UP',
     DOWN: 'DOWN',
-    EMPTY: '',
+    NULL: 'NULL',
 };
 exports.months = [
     'January',
@@ -36,3 +36,7 @@ exports.months = [
     'November',
     'December',
 ];
+exports.UserActivityType = {
+    LOGIN: 'Login',
+    Logout: 'Logout'
+};

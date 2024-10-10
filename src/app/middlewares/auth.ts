@@ -15,6 +15,7 @@ function auth(...requiredRoles: TRole[]) {
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
     }
+     
 
     // checking if the given token is valid
     let decoded;

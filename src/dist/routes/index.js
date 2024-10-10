@@ -12,6 +12,7 @@ const overview_route_1 = require("../modules/overview/overview.route");
 const post_reaction_route_1 = require("../modules/post-reaction/post-reaction.route");
 const category_route_1 = require("../modules/category/category.route");
 const comment_reaction_route_1 = require("../modules/comment-reaction/comment-reaction.route");
+const user_activity_route_1 = require("../modules/user-activity/user-activity.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -57,6 +58,10 @@ const moduleRoutes = [
     {
         path: '/overview',
         router: overview_route_1.OverviewRouter,
+    },
+    {
+        path: '/user-activities',
+        router: user_activity_route_1.UserActivityRouter,
     },
 ];
 const routes = moduleRoutes.map((route) => router.use(route.path, route.router));

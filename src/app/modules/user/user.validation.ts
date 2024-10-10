@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Gender, Role } from '../../utils/constant';
+import { activity } from '../auth/auth.validation';
 
 const UserNameSchema = z.object({
   first_name: z.string(),
@@ -28,6 +29,7 @@ const CreateUserValidation = z.object({
   personal_details: UserPersonalDetailsSchema,
   username: z.string(),
   password: z.string(),
+  activity
 });
 
 export const UpdateProfileValidation = z.object({

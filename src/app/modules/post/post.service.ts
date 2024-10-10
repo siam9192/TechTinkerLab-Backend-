@@ -6,7 +6,6 @@ import User from '../user/user.model';
 import { IPost } from './post.interface';
 import Post from './post.model';
 import { startSession } from 'mongoose';
-import { ReaderService } from '../reader/reader.service';
 import Reader from '../reader/reader.model';
 
 const createPostIntoDB = async (userId: string, payload: IPost) => {
@@ -44,7 +43,10 @@ const createPostIntoDB = async (userId: string, payload: IPost) => {
   }
 };
 
+
+
 const getPostsFromDB = async (query: any) => {
+  
  const sort  = query.sort
   const sorts = [
     {
@@ -74,7 +76,7 @@ const getPostsFromDB = async (query: any) => {
       query.sort = item.value
     }
   })
- query.limit = 3
+    query.limit = 3
   let result = await new QueryBuilder(Post.find(), query)
     .find()
     .textSearch()
@@ -107,11 +109,12 @@ const getPostForUserReadFromDB = async (userId: string, postId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Post id is is required');
   }
 
+
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-
+console.log(user)
   const userLatestSubscription = user.latest_subscription;
 
   const post = await Post.findById(postId)

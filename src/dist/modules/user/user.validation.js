@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserValidations = exports.UpdateProfileValidation = void 0;
 const zod_1 = require("zod");
 const constant_1 = require("../../utils/constant");
+const auth_validation_1 = require("../auth/auth.validation");
 const UserNameSchema = zod_1.z.object({
     first_name: zod_1.z.string(),
     last_name: zod_1.z.string(),
@@ -21,16 +22,18 @@ const UserPersonalDetailsSchema = zod_1.z.object({
     study: StudySchema.optional(),
     date_of_birth: zod_1.z.string().optional().optional(),
     gender: zod_1.z.enum(Object.values(constant_1.Gender)).optional(),
+    about: zod_1.z.string().optional()
 });
 const CreateUserValidation = zod_1.z.object({
     personal_details: UserPersonalDetailsSchema,
     username: zod_1.z.string(),
     password: zod_1.z.string(),
+    activity: auth_validation_1.activity
 });
 exports.UpdateProfileValidation = zod_1.z.object({
     personal_details: UserPersonalDetailsSchema.partial(),
-    profile_photo: zod_1.z.string().optional(),
-    profile_cover_photo: zod_1.z.string().optional(),
+    profile_photo: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]).optional(),
+    profile_cover_photo: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]).optional(),
 });
 const ChangePasswordValidation = zod_1.z.object({
     current_password: zod_1.z.string(),

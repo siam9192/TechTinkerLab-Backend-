@@ -10,6 +10,7 @@ import { OverviewRouter } from '../modules/overview/overview.route';
 import { PostReactionRouter } from '../modules/post-reaction/post-reaction.route';
 import { CategoryRouter } from '../modules/category/category.route';
 import { CommentReactionRouter } from '../modules/comment-reaction/comment-reaction.route';
+import { UserActivityRouter } from '../modules/user-activity/user-activity.route';
 
 const router = Router();
 
@@ -62,6 +63,10 @@ const moduleRoutes: IModuleRoute[] = [
   {
     path: '/overview',
     router: OverviewRouter,
+  },
+  {
+    path: '/user-activities',
+    router: UserActivityRouter,
   },
 ];
 

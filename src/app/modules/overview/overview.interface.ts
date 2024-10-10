@@ -6,6 +6,15 @@ type TMonthRevenue = {
   upcoming: boolean;
 };
 
+export type TMonthData = {
+  month:string,
+  posts:number,
+  revenue:number,
+  payments:number,
+  user_activities:number,
+  upcoming:boolean
+}
+
 export interface IAdminOverview {
   total_user: number;
   total_payment: number;
@@ -13,5 +22,5 @@ export interface IAdminOverview {
   total_subscription: number;
   total_post: number;
   running_month_revenue: number;
-  months_revenue: TMonthRevenue[];
+  monthsData:TMonthData[],
 }

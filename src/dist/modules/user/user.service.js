@@ -18,18 +18,64 @@ const AppError_1 = __importDefault(require("../../Errors/AppError"));
 const user_model_1 = __importDefault(require("./user.model"));
 const bcrypt_1 = require("../../utils/bcrypt");
 const function_1 = require("../../utils/function");
-const constant_1 = require("../../utils/constant");
 const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     //  Hashing password using bcrypt
     payload.password = yield (0, bcrypt_1.bcryptHash)(payload.password);
     payload.role = 'USER';
     return yield user_model_1.default.create(payload);
 });
+const getUserProfileFromDB = (username) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.default.findOne({ username });
+    //  Checking user existence
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
+    }
+    const userLatestSubscription = user.latest_subscription;
+    //  Checking is user verified by comparing current date and subscription end date
+    const is_verified = userLatestSubscription
+        ? new Date(userLatestSubscription.subscription_end_date).valueOf() <
+            new Date().valueOf()
+        : false;
+    const data = {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        profile_photo: user.profile_photo,
+        profile_cover_photo: user.profile_cover_photo,
+        personal_details: user.personal_details,
+        total_post: user.total_post,
+        total_follower: user.total_follower,
+        total_following: user.total_following,
+        role: user.role,
+        is_verified
+    };
+    return data;
+});
 const getUsersFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
     // Getting users
     const users = yield user_model_1.default.find();
     // Return the users data with customize format
-    return users.map((user) => (0, function_1.getCustomizeUserData)(user, true));
+    return users.map((user) => {
+        const latest_subscription = user.latest_subscription;
+        const is_verified = latest_subscription
+            ? new Date(latest_subscription.subscription_end_date).valueOf() <
+                new Date().valueOf()
+            : false;
+        const data = {
+            _id: user._id,
+            role: user.role,
+            personal_details: user.personal_details,
+            username: user.username,
+            email: user.email,
+            profile_photo: user.profile_photo,
+            total_follower: user.total_follower,
+            total_following: user.total_following,
+            is_verified,
+            is_blocked: user.is_blocked,
+            is_deleted: user.is_deleted
+        };
+        return data;
+    });
 });
 const getCurrentUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.default.findById(userId);
@@ -48,7 +94,7 @@ const getCurrentUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, funct
         username: user.username,
         email: user.email,
         profile_photo: user.profile_photo,
-        cover_photo: user.profile_cover_photo,
+        profile_cover_photo: user.profile_cover_photo,
         personal_details: user.personal_details,
         role: user.role,
         is_verified,
@@ -86,6 +132,12 @@ const changePasswordIntoDB = (userId, payload) => __awaiter(void 0, void 0, void
 const updateProfileIntoDB = (userId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     const updateDoc = {};
+    if (payload.profile_cover_photo) {
+        updateDoc.profile_cover_photo = payload.profile_cover_photo;
+    }
+    if (payload.profile_photo) {
+        updateDoc.profile_photo = payload.profile_photo;
+    }
     const personal_details = payload.personal_details;
     if (personal_details === null || personal_details === void 0 ? void 0 : personal_details.name) {
         (0, function_1.convertFieldUpdateFormat)(updateDoc, (_a = payload.personal_details) === null || _a === void 0 ? void 0 : _a.name, 'personal_details.name');
@@ -110,8 +162,12 @@ const getUserLoginActivities = (userId) => __awaiter(void 0, void 0, void 0, fun
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
-    const activities = user.login_activities;
-    return activities;
+    const result = {
+        username: user.username,
+        name: user.personal_details.name,
+        login_activities: user.login_activities
+    };
+    return result;
 });
 const changeUserRoleIntoDB = (currentUserRole, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.default.findById(payload.user_id);
@@ -119,14 +175,20 @@ const changeUserRoleIntoDB = (currentUserRole, payload) => __awaiter(void 0, voi
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
-    // Moderator can not change another admin role but he can change his own role
-    if (user.role === constant_1.Role.ADMIN) {
-        throw new AppError_1.default(http_status_1.default.NOT_ACCEPTABLE, 'Admin role can not be changed because only admin can changed his own role');
-    }
-    // Moderator can not change another moderator or his own role
-    else if (user.role === constant_1.Role.MODERATOR && currentUserRole === constant_1.Role.MODERATOR) {
-        throw new AppError_1.default(http_status_1.default.NOT_ACCEPTABLE, 'Only Admin can changed his own role');
-    }
+    // // Moderator can not change another admin role but he can change his own role
+    // if (user.role === Role.ADMIN) {
+    //   throw new AppError(
+    //     httpStatus.NOT_ACCEPTABLE,
+    //     'Admin role can not be changed because only admin can changed his own role',
+    //   );
+    // }
+    // // Moderator can not change another moderator or his own role
+    // else if (user.role === Role.MODERATOR && currentUserRole === Role.MODERATOR) {
+    //   throw new AppError(
+    //     httpStatus.NOT_ACCEPTABLE,
+    //     'Only Admin can changed his own role',
+    //   );
+    // }
     const updateStatus = yield user_model_1.default.updateOne({
         _id: user._id,
         role: payload.role,
@@ -159,4 +221,5 @@ exports.UserService = {
     getUserLoginActivities,
     changeUserRoleIntoDB,
     changeUserBlockStatusIntoDB,
+    getUserProfileFromDB
 };

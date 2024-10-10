@@ -3,6 +3,7 @@ import validateRequest from '../../middlewares/validateRequest';
 import { UserValidations } from '../user/user.validation';
 import { AuthController } from './auth.controller';
 import { AuthValidations } from './auth.validation';
+import auth from '../../middlewares/auth';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.post(
   AuthController.handelRecoverAccount,
 );
 
+router.post('/logout',auth('ADMIN','MODERATOR','USER'),AuthController.handelLogout)
 router.get('/refresh-token', AuthController.handelGetAccessToken);
 export const AuthRouter = router;

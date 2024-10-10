@@ -85,6 +85,7 @@ const getCurrentUserPost = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getPostForUserRead = catchAsync(async (req: Request, res: Response) => {
+  
   const userId = req.user.id;
   const postId = req.params.postId;
   const result = await PostService.getPostForUserReadFromDB(

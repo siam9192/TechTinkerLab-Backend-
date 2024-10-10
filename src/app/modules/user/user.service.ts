@@ -59,8 +59,30 @@ const getUsersFromDB = async () => {
   const users = await User.find();
 
   // Return the users data with customize format
-  return users.map((user) => getCustomizeUserData(user, true));
-};
+  return users.map((user) => {
+    const latest_subscription = user.latest_subscription;
+     const is_verified = latest_subscription
+    ? new Date(latest_subscription.subscription_end_date).valueOf() <
+      new Date().valueOf()
+    : false;
+  const data: any = {
+    _id:user._id,
+    role:user.role,
+    personal_details:user.personal_details,
+    username: user.username,
+    email:user.email,
+    profile_photo: user.profile_photo,
+    total_follower: user.total_follower,
+    total_following: user.total_following,
+    is_verified,
+    is_blocked:user.is_blocked,
+    is_deleted:user.is_deleted
+  }
+  return data
+})
+
+
+}
 
 const getCurrentUserFromDB = async (userId: string) => {
   const user = await User.findById(userId);
@@ -199,8 +221,13 @@ const getUserLoginActivities = async (userId: string) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const activities = user.login_activities;
-  return activities;
+  const result = {
+    username:user.username,
+    name:user.personal_details.name,
+    login_activities:user.login_activities
+  }
+
+  return result;
 };
 
 const changeUserRoleIntoDB = async (
@@ -211,30 +238,31 @@ const changeUserRoleIntoDB = async (
   },
 ) => {
   const user = await User.findById(payload.user_id);
-
+ 
   // Checking user existence
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  // Moderator can not change another admin role but he can change his own role
-  if (user.role === Role.ADMIN) {
-    throw new AppError(
-      httpStatus.NOT_ACCEPTABLE,
-      'Admin role can not be changed because only admin can changed his own role',
-    );
-  }
-  // Moderator can not change another moderator or his own role
-  else if (user.role === Role.MODERATOR && currentUserRole === Role.MODERATOR) {
-    throw new AppError(
-      httpStatus.NOT_ACCEPTABLE,
-      'Only Admin can changed his own role',
-    );
-  }
+  // // Moderator can not change another admin role but he can change his own role
+  // if (user.role === Role.ADMIN) {
+  //   throw new AppError(
+  //     httpStatus.NOT_ACCEPTABLE,
+  //     'Admin role can not be changed because only admin can changed his own role',
+  //   );
+  // }
+  // // Moderator can not change another moderator or his own role
+  // else if (user.role === Role.MODERATOR && currentUserRole === Role.MODERATOR) {
+  //   throw new AppError(
+  //     httpStatus.NOT_ACCEPTABLE,
+  //     'Only Admin can changed his own role',
+  //   );
+  // }
   const updateStatus = await User.updateOne({
     _id: user._id,
     role: payload.role,
   });
+
   if (!updateStatus.modifiedCount) {
     throw new AppError(
       httpStatus.BAD_REQUEST,

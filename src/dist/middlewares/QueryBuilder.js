@@ -35,6 +35,7 @@ class QueryBuilder {
         for (let field of excludeFields) {
             delete queryObj[field];
         }
+        console.log(queryObj);
         this.modelQuery = this.modelQuery.find(Object.assign({}, queryObj));
         return this;
     }

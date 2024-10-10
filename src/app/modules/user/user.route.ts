@@ -20,7 +20,11 @@ router.get(
   auth('USER'),
   UserController.getCurrentUserLoginActivities,
 );
-
+router.get(
+  '/login-activities/:userId',
+  auth('ADMIN','MODERATOR'),
+  UserController.getUserLoginActivities,
+);
 router.get('/profile/:username',UserController.getUserProfile)
 router.patch(
   '/update-profile',
@@ -37,7 +41,7 @@ router.patch(
 
 router.patch(
   '/change-role',
-  auth('USER'),
+  auth('ADMIN'),
   validateRequest(UserValidations.ChangeUserRoleValidation),
   UserController.changeUserRole,
 );

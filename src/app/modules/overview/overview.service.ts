@@ -11,12 +11,13 @@ import {
   getLastDayOfMonth,
   objectId,
 } from '../../utils/function';
-import { IAdminOverview } from './overview.interface';
+import { IAdminOverview, TMonthData } from './overview.interface';
 import AppError from '../../Errors/AppError';
 import httpStatus from 'http-status';
 import Comment from '../comment/comment.model';
 import Reaction from '../post-reaction/post-reaction.model';
 import Reader from '../reader/reader.model';
+import UserActivity from '../user-activity/user-activity.model';
 
 const getAdminOverviewDataFromDB = async (
   query: any,
@@ -25,7 +26,9 @@ const getAdminOverviewDataFromDB = async (
   const lastDateOfYear = new Date(currentYear, 11, 31);
   const currentMonthNumber = new Date().getMonth();
   const payments = await Payment.find({ createdAt: { $lte: lastDateOfYear } });
-
+  const current_year= new Date().getFullYear()
+  const userActivities = await UserActivity.find()
+  const posts = await Post.find()
   const monthsPayments = months.map((month, monthNumber) => {
     const monthPayments = payments.filter(
       (payment) => new Date(payment.createdAt).getMonth() === monthNumber,
@@ -54,7 +57,43 @@ const getAdminOverviewDataFromDB = async (
   const total_post = await Post.countDocuments();
   const total_subscription = await Subscription.countDocuments();
   const total_revenue = payments.reduce((p, c) => p + c.amount, 0);
-
+ 
+  const last_date_of_Year = new Date(current_year, 11, 31);
+  const monthsData:TMonthData[] = months.map((month,index)=>(
+    {
+      month,
+      payments:payments.filter(payment=>{
+        const date = new Date(payment.createdAt)
+        const dateNow = new Date()
+        const month = date.getMonth()
+        const year = date.getFullYear()
+        return index === month  && dateNow.getFullYear() === year
+      }).length,
+      revenue:payments.filter(payment=>{
+        const date = new Date(payment.createdAt)
+        const dateNow = new Date()
+        const month = date.getMonth()
+        const year = date.getFullYear()
+        return index === month  && dateNow.getFullYear() === year
+      }).reduce((p,c)=>p+c.amount,0),
+      posts:posts.filter(post=>{
+        const date = new Date(post.createdAt)
+        const dateNow = new Date()
+        const month = date.getMonth()
+        const year = date.getFullYear()
+        return index === month  && dateNow.getFullYear() === year
+      }).length,
+      user_activities:posts.filter(activity=>{
+        const date = new Date(activity.createdAt)
+        const dateNow = new Date()
+        const month = date.getMonth()
+        const year = date.getFullYear()
+        return index === month  && dateNow.getFullYear() === year
+      }).length,
+      upcoming: new Date().getMonth() < index
+    }
+  )) 
+  
   return {
     total_user,
     total_payment,
@@ -62,7 +101,7 @@ const getAdminOverviewDataFromDB = async (
     total_subscription,
     total_post,
     running_month_revenue,
-    months_revenue: monthsRevenue,
+    monthsData,
   };
 };
 
@@ -81,7 +120,7 @@ const getCurrentUserOverviewDataFromDB = async (userId: string, query: any) => {
   if(latest_subscription){
     subscription_end_in =  dateDifference(latest_subscription?.subscription_start_date,latest_subscription?.subscription_end_date).diffInDays
   }
-
+ 
   const result = {
     total_post,
     total_reaction,

@@ -21,4 +21,11 @@ router.get(
   '/payment/cancel',
   SubscriptionController.handelPackageSubscriptionPaymentCancel,
 );
+
+
+router.get(
+  '/latest-subscription/current-user',
+  auth('USER'),
+  SubscriptionController.getCurrentUserLatestSubscription,
+);
 export const SubscriptionRouter = router;

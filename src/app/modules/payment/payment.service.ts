@@ -1,9 +1,10 @@
-import { query } from 'express';
+
 import QueryBuilder from '../../middlewares/QueryBuilder';
 import Payment from './payment.model';
 import { objectId } from '../../utils/function';
 
 const getPaymentsFromDB = async (query: any) => {
+  console.log(query)
   const result = await new QueryBuilder(Payment.find(), query)
     .sort()
     .paginate()

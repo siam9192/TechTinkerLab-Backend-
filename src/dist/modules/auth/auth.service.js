@@ -23,6 +23,7 @@ const bcrypt_1 = require("../../utils/bcrypt");
 const account_recover_request_model_1 = __importDefault(require("../account-recover-request/account-recover-request.model"));
 const function_1 = require("../../utils/function");
 const account_recover_email_1 = __importDefault(require("../../email/account-recover-email"));
+const user_activity_service_1 = require("../user-activity/user-activity.service");
 const signup = (payload, req) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.default.findOne({
         $or: [{ email: payload.email }, { username: payload.username }],
@@ -39,15 +40,9 @@ const signup = (payload, req) => __awaiter(void 0, void 0, void 0, function* () 
             throw new AppError_1.default(http_status_1.default.NOT_ACCEPTABLE, 'User is already exists');
         }
     }
-    payload.login_activities = [
-        {
-            device_info: {
-                device: 'Redmi note 10',
-            },
-            login_date: new Date(),
-        },
-    ];
     const createdUser = yield user_service_1.UserService.createUserIntoDB(payload);
+    const activity = Object.assign(Object.assign({}, payload.activity), { user: createdUser._id });
+    yield user_activity_service_1.UserActivityService.createUserActivityIntoDB('Login', activity);
     const tokenPayload = {
         id: createdUser._id,
         role: createdUser.role,
@@ -66,7 +61,6 @@ const signIn = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         email: payload.email,
         is_deleted: false,
     }).select('password role');
-    // Checking user existence
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Account not found');
     }
@@ -80,6 +74,8 @@ const signIn = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         id: user._id,
         role: user.role,
     };
+    const activity = Object.assign(Object.assign({}, payload.activity), { user: user._id });
+    yield user_activity_service_1.UserActivityService.createUserActivityIntoDB('Login', activity);
     // Generating access token
     const accessToken = yield (0, jwt_1.generateJwtToken)(tokenPayload, config_1.default.jwt_access_secret, '30d');
     // Generating refresh token
@@ -122,8 +118,8 @@ const forgetPassword = (payload) => __awaiter(void 0, void 0, void 0, function* 
     // Generating otp code
     const otp = (0, function_1.generateOTP)();
     // Sending otp
-    console.log(yield (0, account_recover_email_1.default)(user.email, user.personal_details.name.first_name, otp));
-    payload.otp = yield (0, bcrypt_1.bcryptHash)(otp);
+    yield (0, account_recover_email_1.default)(user.email, user.personal_details.name.first_name, otp),
+        payload.otp = yield (0, bcrypt_1.bcryptHash)(otp);
     const recoverRequest = yield account_recover_request_model_1.default.create(payload);
     const jwtPayload = {
         requestId: recoverRequest._id,
@@ -211,6 +207,10 @@ const recoverAccount = (payload) => __awaiter(void 0, void 0, void 0, function* 
     }
     return null;
 });
+const logout = (userId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    payload.user = (0, function_1.objectId)(userId);
+    yield user_activity_service_1.UserActivityService.createUserActivityIntoDB('Logout', payload);
+});
 exports.AuthService = {
     signup,
     signIn,
@@ -218,4 +218,5 @@ exports.AuthService = {
     forgetPassword,
     verifyForgetPasswordRequest,
     recoverAccount,
+    logout
 };

@@ -50,7 +50,9 @@ export const getCustomizeUserData = (
     : false;
   const data: any = {
     _id:user._id,
+    role:user.role,
     username: user.username,
+    email:user.email,
     profile_photo: user.profile_photo,
     total_follower: user.total_follower,
     total_following: user.total_following,

@@ -9,14 +9,14 @@ const router = Router();
 
 router.post(
   '/upsert',
-  auth('USER'),
+  auth('USER','ADMIN','MODERATOR'),
   validateRequest(PostReactionValidations.UpsertPostReactionValidation),
   PostReactionController.upsertPostReaction,
 );
 
 router.get(
   '/:postId/current-user',
-  auth('USER'),
+  auth('USER','ADMIN','MODERATOR'),
   PostReactionController.getCurrentUserReactionOfPost,
 );
 router.get('/post/:postId',PostReactionController.getPostReaction)
