@@ -93,11 +93,11 @@ const getCurrentUserFromDB = async (userId: string) => {
   }
 
   const userLatestSubscription = user.latest_subscription;
-
+  
   //  Checking is user verified by comparing current date and subscription end date
   const is_verified = userLatestSubscription
-    ? new Date(userLatestSubscription.subscription_end_date).valueOf() <
-      new Date().valueOf()
+    ? new Date(userLatestSubscription.subscription_end_date).getTime() >
+     Date.now()
     : false;
 
   const data = {

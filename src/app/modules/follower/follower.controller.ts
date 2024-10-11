@@ -56,13 +56,10 @@ const getAccountFollowStatusOfCurrentUser = catchAsync(
 
 const getProfileFollowers = catchAsync(
   async (req: Request, res: Response) => {
-    const userId = req.user.id;
-    const accountId = req.params.accountId;
+    const accountUsername = req.params.username;
+    
     const result =
-      await FollowerService.getAccountFollowStatusOfCurrentUserFromDB(
-        userId,
-        accountId,
-      );
+      await FollowerService.getProfileFollowersFromDB(accountUsername)
     sendSuccessResponse(res, {
       statusCode: httpStatus.CREATED,
       message: 'Follow status retrieved successfully',

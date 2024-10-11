@@ -16,7 +16,7 @@ router.get(
 
 router.get(
   '/post/:postId',
-  auth('USER'),
+  auth('USER','ADMIN'),
   OverviewController.getPostOverviewData,
 );
 export const OverviewRouter = router;

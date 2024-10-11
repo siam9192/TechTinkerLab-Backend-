@@ -22,8 +22,8 @@ export const getCustomizePostData = (post: IPost) => {
   const author_latest_subscription = author.latest_subscription;
 
   const is_verified = author_latest_subscription
-    ? new Date(author_latest_subscription.subscription_end_date).valueOf() <
-      new Date().valueOf()
+    ? new Date(author_latest_subscription.subscription_end_date).getTime() >
+     Date.now()
     : false;
 
   const result = {
@@ -45,8 +45,8 @@ export const getCustomizeUserData = (
 ): IUserView => {
   const latest_subscription = user.latest_subscription;
   const is_verified = latest_subscription
-    ? new Date(latest_subscription.subscription_end_date).valueOf() <
-      new Date().valueOf()
+    ? new Date(latest_subscription.subscription_end_date).getTime() >
+     Date.now()
     : false;
   const data: any = {
     _id:user._id,

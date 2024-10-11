@@ -141,7 +141,7 @@ const getUserFollowers = async (userId: string, query: any) => {
 
 const getProfileFollowersFromDB = async (username:string)=> {
   const user = await User.findOne({username})
-   
+   console.log(user)
   if(!user){
     throw new AppError(httpStatus.NOT_FOUND,'User not found')
   }

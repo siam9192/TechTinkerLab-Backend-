@@ -114,7 +114,8 @@ const getCurrentUserOverviewDataFromDB = async (userId: string, query: any) => {
   const posts = await Post.find({ author: objectId(userId) });
   const total_post = posts.length;
   const total_earning = 0;
-  const latest_posts = posts.slice(-4, posts.length);
+
+  const comments = await Comment.find({post:{$in:posts.map(i=>i._id)}}).countDocuments()
    const total_reaction = posts.reduce((p,c)=>p+c.total_upvote!+c.total_downvote!,0)
   let subscription_end_in = null;
   if(latest_subscription){
@@ -125,9 +126,10 @@ const getCurrentUserOverviewDataFromDB = async (userId: string, query: any) => {
     total_post,
     total_reaction,
     total_earning,
-    latest_posts,
-    subscription_end_in
+    subscription_end_in,
+    total_comment:comments
   };
+ 
 
   return result;
 };
@@ -149,8 +151,9 @@ const getPostOverviewDataFromDB = async (
 
   const total_read = post.total_read;
   const total_earning = post.total_earning;
-  const total_reaction = await Reaction.find({ post: post }).countDocuments();
+  const total_reaction = await Reaction.find({ post: post._id }).countDocuments();
   const total_reader = await Reader.find({ post: post._id }).countDocuments();
+  
 
   let readers_summery;
   let comments_summery;

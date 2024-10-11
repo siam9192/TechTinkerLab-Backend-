@@ -114,7 +114,7 @@ const getPostForUserReadFromDB = async (userId: string, postId: string) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-console.log(user)
+
   const userLatestSubscription = user.latest_subscription;
 
   const post = await Post.findById(postId)
@@ -131,16 +131,15 @@ console.log(user)
   if (user.role === 'USER' && userId !== post.author._id.toString()) {
     
     //  Checking is user verified by comparing current date and subscription end date
-    const isUserVerified = userLatestSubscription
-      ? new Date(userLatestSubscription.subscription_end_date).valueOf() <
-        new Date().valueOf()
-      : false;
-
+    const is_verified = userLatestSubscription
+    ? new Date(userLatestSubscription.subscription_end_date).getTime() >
+     Date.now()
+    : false;
     //  if user is not verified and the post is premium content then throw an error
     if (
       post.author._id.toString() !== userId &&
       post.is_premium &&
-      !isUserVerified
+      !is_verified
     ) {
       throw new AppError(
         httpStatus.NOT_ACCEPTABLE,
@@ -157,7 +156,7 @@ console.log(user)
   
   else {
   // Creating the new reader of the post
-  Reader.create({user:userId,post:postId});
+ await Reader.create({user:userId,post:postId});
   }
    // await Post.findByIdAndUpdate(postId,{total_reader:{$inc:1}})
  await Post.findByIdAndUpdate(postId,{$inc:{total_read:1}})

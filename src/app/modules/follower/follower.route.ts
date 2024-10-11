@@ -23,12 +23,12 @@ router.post(
 
 router.get(
   '/current-user',
-  auth('USER', 'ADMIN'),
+  auth(...(Object.values(Role) as TRole[])),
   FollowerController.getCurrentUserFollowers,
 );
 router.get(
   '/current-user/account-follow-status/:username',
-  auth('USER'),
+  auth(...(Object.values(Role) as TRole[])),
   FollowerController.getAccountFollowStatusOfCurrentUser,
 );
 router.get('/profile/:username',FollowerController.getProfileFollowers)
