@@ -195,10 +195,10 @@ const deletePostFromDB = async (userId: string, postId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
   }
 
-  // Checking is the author of this post is user
-  else if (post.author.toString() !== userId) {
-    throw new AppError(httpStatus.BAD_GATEWAY, 'Post can not be deleted');
-  }
+  // // Checking is the author of this post is user
+  // else if (post.author.toString() !== userId) {
+  //   throw new AppError(httpStatus.BAD_GATEWAY, 'Post can not be deleted');
+  // }
 
   const session = await startSession();
   await session.startTransaction();
